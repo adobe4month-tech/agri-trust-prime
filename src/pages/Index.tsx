@@ -12,15 +12,15 @@ import BrandCarousel from "@/components/home/BrandCarousel";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       <Header />
       <main className="flex-1">
         <HeroSection />
         <TrustBar />
-        <FeaturedProducts title="🔥 Weekly Sale" />
+        <FeaturedProducts title="Weekly Sale" icon="flame" />
         <ShopByCrop />
         <ShopByProblem />
-        <FeaturedProducts title="Latest Products" filter={(p) => p.category === "seed"} />
+        <FeaturedProducts title="Latest Products" filter={(p) => p.category === "seed"} icon="sparkles" />
         <FeaturedReviews />
         <BrandCarousel />
       </main>
