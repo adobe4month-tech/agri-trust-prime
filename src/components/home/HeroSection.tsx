@@ -32,7 +32,7 @@ export default function HeroSection() {
                 Shop Now <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 backdrop-blur-sm">
+            <Button asChild size="lg" className="bg-primary-foreground/15 border border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/25 backdrop-blur-sm">
               <a href="https://wa.me/923240287276" target="_blank" rel="noopener noreferrer">
                 Talk to Agronomist
               </a>
