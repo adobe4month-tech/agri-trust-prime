@@ -1,4 +1,4 @@
-import { Search, ShoppingCart, User, Menu } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, Phone, MapPin } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -18,14 +18,23 @@ export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-xl border-b border-border/50">
-      {/* Top promo bar */}
-      <div className="bg-agri-deep relative overflow-hidden">
-        <div className="absolute inset-0 shimmer pointer-events-none" />
-        <div className="container flex items-center justify-center py-2 relative">
-          <p className="text-[11px] md:text-xs font-semibold text-white/90 tracking-wide text-center">
-            ✨ Pakistan's #1 Agri Store — <span className="text-agri-gold font-bold">Free Delivery</span> on 1000+ Products
+    <header className="sticky top-0 z-50 bg-card border-b border-border/50">
+      {/* Top bar — bilingual + contact */}
+      <div className="bg-agri-deep">
+        <div className="container flex items-center justify-between py-1.5">
+          <p className="text-[11px] font-semibold text-primary-foreground/80 hidden sm:block" dir="rtl">
+            پاکستان کا نمبر 1 زرعی سٹور
           </p>
+          <div className="flex items-center gap-4 mx-auto sm:mx-0">
+            <a href="tel:+923240287276" className="flex items-center gap-1.5 text-[11px] text-primary-foreground/80 hover:text-agri-gold transition-colors">
+              <Phone className="h-3 w-3" />
+              <span className="font-semibold">0324-028-7276</span>
+            </a>
+            <span className="text-primary-foreground/30">|</span>
+            <Link to="/track" className="text-[11px] text-primary-foreground/80 hover:text-agri-gold transition-colors font-semibold flex items-center gap-1">
+              <MapPin className="h-3 w-3" /> Track Order
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -38,10 +47,10 @@ export default function Header() {
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-80 bg-card/95 backdrop-blur-xl p-0">
-            <div className="p-6 border-b bg-gradient-to-br from-primary/5 to-transparent">
+          <SheetContent side="left" className="w-80 bg-card p-0">
+            <div className="p-6 border-b bg-secondary/50">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary to-trust-green flex items-center justify-center shadow-glow-green">
+                <div className="w-11 h-11 rounded-xl bg-primary flex items-center justify-center">
                   <span className="text-primary-foreground font-extrabold text-sm">KC</span>
                 </div>
                 <div>
@@ -52,7 +61,7 @@ export default function Header() {
             </div>
             <div className="p-4 flex flex-col gap-1">
               {navLinks.map(l => (
-                <Link key={l.to} to={l.to} className="px-4 py-3.5 rounded-xl text-foreground hover:bg-primary/5 hover:text-primary transition-all font-semibold text-sm">
+                <Link key={l.to} to={l.to} className="px-4 py-3 rounded-xl text-foreground hover:bg-primary/5 hover:text-primary transition-all font-semibold text-sm">
                   {l.label}
                 </Link>
               ))}
@@ -62,7 +71,7 @@ export default function Header() {
 
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-trust-green flex items-center justify-center shadow-glow-green transition-transform duration-300 group-hover:scale-105">
+          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
             <span className="text-primary-foreground font-extrabold text-sm">KC</span>
           </div>
           <div className="hidden sm:block">
@@ -77,7 +86,7 @@ export default function Header() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
             <Input
               placeholder="Search seeds, pesticides, fertilizers..."
-              className="pl-11 h-11 bg-secondary/80 border-0 rounded-xl text-sm focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:bg-card transition-all"
+              className="pl-11 h-11 bg-secondary/60 border border-border rounded-xl text-sm focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:bg-card transition-all"
             />
           </div>
         </div>
@@ -87,12 +96,12 @@ export default function Header() {
           <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSearchOpen(!searchOpen)}>
             <Search className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="hover:bg-primary/5">
+          <Button variant="ghost" size="icon">
             <User className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="relative hover:bg-primary/5">
+          <Button variant="ghost" size="icon" className="relative">
             <ShoppingCart className="h-5 w-5" />
-            <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-accent text-accent-foreground text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg animate-pulse-soft">
+            <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-accent text-accent-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
               2
             </span>
           </Button>
@@ -113,11 +122,11 @@ export default function Header() {
       <nav className="hidden lg:block border-t border-border/30">
         <div className="container flex items-center gap-8 py-2.5">
           {navLinks.map(l => (
-            <Link key={l.to} to={l.to} className="text-sm font-semibold text-muted-foreground hover:text-primary transition-all duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full">
+            <Link key={l.to} to={l.to} className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-200 hover:after:w-full">
               {l.label}
             </Link>
           ))}
-          <Link to="/education" className="text-sm font-semibold text-muted-foreground hover:text-primary transition-all ml-auto">
+          <Link to="/education" className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors ml-auto">
             Kissan Education
           </Link>
         </div>
