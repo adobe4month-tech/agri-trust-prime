@@ -1,8 +1,3 @@
-// ==============================
-// MOCK DATA — maps to existing backend fields.
-// Fields marked "🆕 20% Upgrade" are new suggestions.
-// ==============================
-
 export interface Product {
   id: number;
   name: string;
@@ -15,10 +10,11 @@ export interface Product {
   category: "pesticide" | "fertilizer" | "seed" | "machinery" | "herbicide";
   freeDelivery: boolean;
   onSale: boolean;
-  // 🆕 20% Upgrade fields
-  badges: string[];            // e.g. ["Authentic Brand", "Batch Verified"]
-  rating: number;              // 1-5
+  badges: string[];
+  rating: number;
   reviewCount: number;
+  soldCount: number;
+  watchingCount: number;
   activeIngredient?: string;
   dosagePerAcre?: string;
   applicationMethod?: string;
@@ -35,6 +31,7 @@ export interface Review {
   text: string;
   crop: string;
   verified: boolean;
+  orderId?: string;
 }
 
 export const brands = [
@@ -51,7 +48,7 @@ export const products: Product[] = [
     image2: "https://kissancares.com/assets/img/product/10231220250806484.webp",
     category: "herbicide", freeDelivery: true, onSale: true,
     badges: ["Authentic Brand", "Batch Verified"],
-    rating: 4.6, reviewCount: 38,
+    rating: 4.6, reviewCount: 38, soldCount: 1247, watchingCount: 14,
     activeIngredient: "Bensulfuron Methyl + Acetachlor",
     dosagePerAcre: "150gm per acre", applicationMethod: "Mix in water, broadcast spray",
     targetCrops: ["Rice"], targetProblems: ["Weed Control"],
@@ -64,7 +61,7 @@ export const products: Product[] = [
     image2: "https://kissancares.com/assets/img/product/36591220250806384.webp",
     category: "herbicide", freeDelivery: true, onSale: true,
     badges: ["Authentic Brand", "Expiry Checked"],
-    rating: 4.8, reviewCount: 52,
+    rating: 4.8, reviewCount: 52, soldCount: 2039, watchingCount: 23,
     activeIngredient: "Cyhalofop Butyl + Metamifop",
     dosagePerAcre: "300ml per acre", applicationMethod: "Foliar spray",
     targetCrops: ["Rice"], targetProblems: ["Weed Control"],
@@ -76,7 +73,7 @@ export const products: Product[] = [
     image: "https://kissancares.com/assets/img/product/25301320250816193.webp",
     category: "pesticide", freeDelivery: false, onSale: true,
     badges: ["Authentic Brand", "Batch Verified"],
-    rating: 4.5, reviewCount: 67,
+    rating: 4.5, reviewCount: 67, soldCount: 1705, watchingCount: 18,
     activeIngredient: "Lambda Cyhalothrin 2.5%",
     dosagePerAcre: "250ml per acre", applicationMethod: "Foliar spray",
     targetCrops: ["Cotton", "Wheat", "Rice", "Vegetables"],
@@ -90,7 +87,7 @@ export const products: Product[] = [
     image2: "https://kissancares.com/assets/img/product/07251220260301647.webp",
     category: "seed", freeDelivery: true, onSale: true,
     badges: ["Authentic Brand", "Expiry Checked", "High Germination"],
-    rating: 4.9, reviewCount: 124,
+    rating: 4.9, reviewCount: 124, soldCount: 3421, watchingCount: 31,
     activeIngredient: "Hybrid Corn Variety 3575",
     dosagePerAcre: "10kg per acre", applicationMethod: "Direct sowing",
     targetCrops: ["Maize"], targetProblems: [],
@@ -103,7 +100,7 @@ export const products: Product[] = [
     image2: "https://kissancares.com/assets/img/product/57181520260310501.webp",
     category: "seed", freeDelivery: true, onSale: true,
     badges: ["Authentic Brand", "High Germination"],
-    rating: 4.7, reviewCount: 31,
+    rating: 4.7, reviewCount: 31, soldCount: 892, watchingCount: 9,
     activeIngredient: "F1 Hybrid Variety",
     dosagePerAcre: "50g per acre", applicationMethod: "Nursery then transplant",
     targetCrops: ["Vegetables"], targetProblems: [],
@@ -116,7 +113,7 @@ export const products: Product[] = [
     image2: "https://kissancares.com/assets/img/product/04351520260310874.webp",
     category: "seed", freeDelivery: true, onSale: true,
     badges: ["Authentic Brand"],
-    rating: 4.4, reviewCount: 19,
+    rating: 4.4, reviewCount: 19, soldCount: 456, watchingCount: 5,
     activeIngredient: "F1 Hybrid Variety",
     dosagePerAcre: "10g per acre", applicationMethod: "Nursery then transplant",
     targetCrops: ["Vegetables"], targetProblems: [],
@@ -129,7 +126,7 @@ export const products: Product[] = [
     image2: "https://kissancares.com/assets/img/product/29441120250807818.webp",
     category: "pesticide", freeDelivery: false, onSale: true,
     badges: ["Batch Verified"],
-    rating: 4.3, reviewCount: 45,
+    rating: 4.3, reviewCount: 45, soldCount: 1123, watchingCount: 12,
     activeIngredient: "Monocrotophos 5%",
     dosagePerAcre: "7kg per acre", applicationMethod: "Granular broadcast",
     targetCrops: ["Rice"], targetProblems: ["Pest Control"],
@@ -142,7 +139,7 @@ export const products: Product[] = [
     image2: "https://kissancares.com/assets/img/product/28311220250807579.webp",
     category: "pesticide", freeDelivery: false, onSale: true,
     badges: ["Authentic Brand", "Batch Verified"],
-    rating: 4.6, reviewCount: 33,
+    rating: 4.6, reviewCount: 33, soldCount: 789, watchingCount: 7,
     activeIngredient: "Cartap Hydrochloride 4%",
     dosagePerAcre: "9kg per acre", applicationMethod: "Granular broadcast in standing water",
     targetCrops: ["Rice"], targetProblems: ["Pest Control"],
@@ -151,29 +148,29 @@ export const products: Product[] = [
 ];
 
 export const reviews: Review[] = [
-  { id: 1, name: "Muhammad Aslam", location: "Multan, Punjab", rating: 5, text: "Spectar ne meri chawal ki fasal mein jari booti ka masla hal kar diya. Bohat behtareen product hai!", crop: "Rice", verified: true },
-  { id: 2, name: "Abdul Rehman", location: "Rahim Yar Khan", rating: 5, text: "Sohni Dharti 3575 corn seed se bohat acha paidawar mila. Silage ke liye best hai.", crop: "Maize", verified: true },
-  { id: 3, name: "Ghulam Mustafa", location: "Sahiwal, Punjab", rating: 4, text: "Lambda insecticide se keeron ka khatma ho gaya. Delivery bhi time par aayi.", crop: "Cotton", verified: true },
-  { id: 4, name: "Tariq Mehmood", location: "Faisalabad", rating: 5, text: "Kissan Cares se saman mangwaya, original product mila. Trust karo is website par!", crop: "Wheat", verified: true },
-  { id: 5, name: "Zahid Hussain", location: "Bahawalpur", rating: 5, text: "Pehli dafa online kharida aur bohat khush hua. Quality 100% original hai.", crop: "Vegetables", verified: true },
+  { id: 1, name: "Muhammad Aslam", location: "Multan, Punjab", rating: 5, text: "Spectar ne meri chawal ki fasal mein jari booti ka masla hal kar diya. Bohat behtareen product hai!", crop: "Rice", verified: true, orderId: "KC-2847" },
+  { id: 2, name: "Abdul Rehman", location: "Rahim Yar Khan", rating: 5, text: "Sohni Dharti 3575 corn seed se bohat acha paidawar mila. Silage ke liye best hai.", crop: "Maize", verified: true, orderId: "KC-3102" },
+  { id: 3, name: "Ghulam Mustafa", location: "Sahiwal, Punjab", rating: 4, text: "Lambda insecticide se keeron ka khatma ho gaya. Delivery bhi time par aayi.", crop: "Cotton", verified: true, orderId: "KC-2956" },
+  { id: 4, name: "Tariq Mehmood", location: "Faisalabad", rating: 5, text: "Kissan Cares se saman mangwaya, original product mila. Trust karo is website par!", crop: "Wheat", verified: true, orderId: "KC-3215" },
+  { id: 5, name: "Zahid Hussain", location: "Bahawalpur", rating: 5, text: "Pehli dafa online kharida aur bohat khush hua. Quality 100% original hai.", crop: "Vegetables", verified: true, orderId: "KC-3340" },
 ];
 
 export const cropCategories = [
-  { name: "Wheat", nameUrdu: "گندم", slug: "wheat" },
-  { name: "Cotton", nameUrdu: "کپاس", slug: "cotton" },
-  { name: "Rice", nameUrdu: "چاول", slug: "rice" },
-  { name: "Maize", nameUrdu: "مکئی", slug: "maize" },
-  { name: "Sugarcane", nameUrdu: "گنا", slug: "sugarcane" },
-  { name: "Vegetables", nameUrdu: "سبزیاں", slug: "vegetables" },
+  { name: "Wheat", nameUrdu: "گندم", slug: "wheat", productCount: 45 },
+  { name: "Cotton", nameUrdu: "کپاس", slug: "cotton", productCount: 38 },
+  { name: "Rice", nameUrdu: "چاول", slug: "rice", productCount: 62 },
+  { name: "Maize", nameUrdu: "مکئی", slug: "maize", productCount: 28 },
+  { name: "Sugarcane", nameUrdu: "گنا", slug: "sugarcane", productCount: 22 },
+  { name: "Vegetables", nameUrdu: "سبزیاں", slug: "vegetables", productCount: 51 },
 ];
 
 export const problemCategories = [
-  { name: "Weed Control", icon: "🌿", slug: "weed-control", count: 45 },
-  { name: "Pest Control", icon: "🐛", slug: "pest-control", count: 78 },
-  { name: "Disease Control", icon: "🦠", slug: "disease-control", count: 32 },
-  { name: "Nutrition Boost", icon: "💧", slug: "nutrition-boost", count: 56 },
-  { name: "Seed Treatment", icon: "🌱", slug: "seed-treatment", count: 23 },
-  { name: "Growth Regulators", icon: "📈", slug: "growth-regulators", count: 18 },
+  { name: "Weed Control", nameUrdu: "جڑی بوٹی", icon: "weed", slug: "weed-control", count: 45 },
+  { name: "Pest Control", nameUrdu: "کیڑے مکوڑے", icon: "pest", slug: "pest-control", count: 78 },
+  { name: "Disease Control", nameUrdu: "بیماریاں", icon: "disease", slug: "disease-control", count: 32 },
+  { name: "Nutrition Boost", nameUrdu: "غذائیت", icon: "nutrition", slug: "nutrition-boost", count: 56 },
+  { name: "Seed Treatment", nameUrdu: "بیج علاج", icon: "seed", slug: "seed-treatment", count: 23 },
+  { name: "Growth Regulators", nameUrdu: "نشوونما", icon: "growth", slug: "growth-regulators", count: 18 },
 ];
 
 export const stats = {

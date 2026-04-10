@@ -16,12 +16,12 @@ const Index = () => {
       <Header />
       <main className="flex-1">
         <HeroSection />
-        <TrustBar />
         <FeaturedProducts title="Weekly Sale" icon="flame" />
         <ShopByCrop />
         <ShopByProblem />
         <FeaturedProducts title="Latest Products" filter={(p) => p.category === "seed"} icon="sparkles" />
         <FeaturedReviews />
+        <TrustBar />
         <BrandCarousel />
       </main>
       <Footer />

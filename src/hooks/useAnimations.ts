@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Scroll-reveal: adds 'revealed' class when element enters viewport
@@ -17,7 +17,7 @@ export function useScrollReveal(threshold = 0.15) {
           observer.unobserve(el);
         }
       },
-      { threshold, rootMargin: "0px 0px -40px 0px" }
+      { threshold, rootMargin: "0px 0px -30px 0px" }
     );
 
     observer.observe(el);
@@ -30,7 +30,7 @@ export function useScrollReveal(threshold = 0.15) {
 /**
  * Animated counter that counts up when element enters viewport
  */
-export function useAnimatedCounter(target: number, duration = 1800) {
+export function useAnimatedCounter(target: number, duration = 1500) {
   const [count, setCount] = useState(0);
   const [started, setStarted] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -60,7 +60,6 @@ export function useAnimatedCounter(target: number, duration = 1800) {
     const animate = (now: number) => {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      // Ease-out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       setCount(Math.floor(eased * target));
       if (progress < 1) requestAnimationFrame(animate);
@@ -73,27 +72,26 @@ export function useAnimatedCounter(target: number, duration = 1800) {
 }
 
 /**
- * Type-writer effect for text
+ * Countdown timer hook for sale sections
  */
-export function useTypewriter(text: string, speed = 40, delay = 500) {
-  const [displayed, setDisplayed] = useState("");
-  const [started, setStarted] = useState(false);
+export function useCountdown(hoursFromNow = 12) {
+  const [timeLeft, setTimeLeft] = useState({ hours: hoursFromNow, minutes: 0, seconds: 0 });
 
   useEffect(() => {
-    const t = setTimeout(() => setStarted(true), delay);
-    return () => clearTimeout(t);
-  }, [delay]);
+    const endTime = Date.now() + hoursFromNow * 60 * 60 * 1000;
 
-  useEffect(() => {
-    if (!started) return;
-    if (displayed.length >= text.length) return;
+    const tick = () => {
+      const diff = Math.max(0, endTime - Date.now());
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      setTimeLeft({ hours, minutes, seconds });
+    };
 
-    const t = setTimeout(() => {
-      setDisplayed(text.slice(0, displayed.length + 1));
-    }, speed);
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+  }, [hoursFromNow]);
 
-    return () => clearTimeout(t);
-  }, [started, displayed, text, speed]);
-
-  return displayed;
+  return timeLeft;
 }

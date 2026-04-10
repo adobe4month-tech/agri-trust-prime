@@ -1,112 +1,185 @@
-import heroImg from "@/assets/hero-farm.jpg";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles, ShieldCheck, Truck, Banknote } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useTypewriter } from "@/hooks/useAnimations";
+import { useState, useEffect } from "react";
+import heroImg from "@/assets/hero-farm.jpg";
+
+const slides = [
+  {
+    title: "Spring Season Sale",
+    titleAccent: "Up to 30% Off",
+    subtitle: "Premium seeds, pesticides & herbicides for the Kharif season",
+    cta: "Shop Sale",
+    ctaLink: "/products?sale=true",
+  },
+  {
+    title: "Pakistan's Trusted",
+    titleAccent: "Agri Store",
+    subtitle: "100% original products from 35+ top agricultural brands",
+    cta: "Explore Products",
+    ctaLink: "/products",
+  },
+  {
+    title: "Free Delivery on",
+    titleAccent: "1000+ Products",
+    subtitle: "Nationwide delivery with Cash on Delivery available",
+    cta: "Shop Now",
+    ctaLink: "/products",
+  },
+];
+
+const quickCategories = [
+  { label: "Pesticides", to: "/products?category=pesticide" },
+  { label: "Seeds", to: "/products?category=seed" },
+  { label: "Herbicides", to: "/products?category=herbicide" },
+  { label: "Fertilizers", to: "/products?category=fertilizer" },
+  { label: "Machinery", to: "/products?category=machinery" },
+];
 
 export default function HeroSection() {
-  const tagline = useTypewriter("Pakistan's #1 Trusted Agricultural Marketplace", 35, 800);
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActive(prev => (prev + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const slide = slides[active];
 
   return (
-    <section className="relative overflow-hidden min-h-[520px] md:min-h-[600px] lg:min-h-[680px]">
-      {/* Background image with parallax-like zoom */}
-      <img
-        src={heroImg}
-        alt="Lush Pakistani farmland at sunrise"
-        className="absolute inset-0 w-full h-full object-cover scale-105"
-        width={1920}
-        height={800}
-      />
+    <section className="relative overflow-hidden">
+      {/* Background */}
+      <div className="relative min-h-[420px] md:min-h-[480px] lg:min-h-[520px]">
+        <img
+          src={heroImg}
+          alt="Lush Pakistani farmland"
+          className="absolute inset-0 w-full h-full object-cover"
+          width={1920}
+          height={800}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-agri-deep/90 via-agri-deep/75 to-agri-deep/40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-agri-deep/50 via-transparent to-transparent" />
 
-      {/* Multi-layer gradient overlay for depth */}
-      <div className="absolute inset-0 bg-gradient-to-r from-agri-deep/95 via-agri-deep/80 to-agri-deep/30" />
-      <div className="absolute inset-0 bg-gradient-to-t from-agri-deep/60 via-transparent to-transparent" />
-
-      {/* Subtle grain texture for premium feel */}
-      <div className="absolute inset-0 opacity-[0.03]" style={{
-        backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\'/%3E%3C/svg%3E")',
-      }} />
-
-      {/* Decorative orbs */}
-      <div className="absolute top-20 right-[20%] w-72 h-72 rounded-full bg-agri-gold/10 blur-[100px] float" />
-      <div className="absolute bottom-10 left-[10%] w-96 h-96 rounded-full bg-primary/15 blur-[120px]" />
-
-      {/* Content */}
-      <div className="relative container flex items-center min-h-[520px] md:min-h-[600px] lg:min-h-[680px]">
-        <div className="max-w-2xl space-y-6 md:space-y-8">
-          {/* Animated badge */}
-          <div
-            className="inline-flex items-center gap-2.5 glass-card rounded-full px-5 py-2"
-            style={{ animation: "hero-badge-enter 0.6s ease-out 0.3s both" }}
-          >
-            <div className="w-2 h-2 rounded-full bg-agri-gold animate-pulse-soft" />
-            <ShieldCheck className="h-4 w-4 text-agri-gold" />
-            <span className="text-xs md:text-sm font-semibold text-white/90 tracking-wide">100% Verified Agricultural Products</span>
-          </div>
-
-          {/* Hero heading with staggered reveal */}
-          <div>
-            <h2
-              className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.1] tracking-tight"
-              style={{ animation: "hero-text-reveal 0.8s ease-out 0.5s both" }}
+        {/* Content */}
+        <div className="relative container flex items-center min-h-[420px] md:min-h-[480px] lg:min-h-[520px]">
+          <div className="max-w-xl space-y-5">
+            {/* Badge */}
+            <div
+              className="inline-flex items-center gap-2 bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 rounded-full px-4 py-1.5"
+              style={{ animation: "fade-up 0.5s ease-out both" }}
             >
-              Pakistan's Trusted
-            </h2>
-            <h2
-              className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-gradient-gold leading-[1.1] tracking-tight mt-1"
-              style={{ animation: "hero-text-reveal 0.8s ease-out 0.7s both" }}
+              <ShieldCheck className="h-3.5 w-3.5 text-agri-gold" />
+              <span className="text-[11px] font-semibold text-primary-foreground/90">100% Verified Products</span>
+            </div>
+
+            {/* Heading — smooth transition */}
+            <div key={active} style={{ animation: "fade-up 0.5s ease-out both" }}>
+              <h2 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-primary-foreground leading-[1.1]">
+                {slide.title}
+              </h2>
+              <h2 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-agri-gold leading-[1.1] mt-1">
+                {slide.titleAccent}
+              </h2>
+            </div>
+
+            <p
+              className="text-primary-foreground/70 text-sm md:text-base max-w-md leading-relaxed"
+              key={`sub-${active}`}
+              style={{ animation: "fade-up 0.5s ease-out 0.1s both" }}
             >
-              Agri Store
-            </h2>
+              {slide.subtitle}
+            </p>
+
+            {/* CTAs */}
+            <div
+              className="flex flex-wrap gap-3 pt-1"
+              style={{ animation: "fade-up 0.5s ease-out 0.2s both" }}
+            >
+              <Button asChild variant="hero" size="lg">
+                <Link to={slide.ctaLink}>
+                  <Sparkles className="h-4 w-4" /> {slide.cta} <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="hero-outline" size="lg">
+                <a href="https://wa.me/923240287276" target="_blank" rel="noopener noreferrer">
+                  Talk to Agronomist
+                </a>
+              </Button>
+            </div>
+
+            {/* Slide dots */}
+            <div className="flex items-center gap-2 pt-2">
+              {slides.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActive(i)}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    i === active ? "w-8 bg-agri-gold" : "w-3 bg-primary-foreground/30 hover:bg-primary-foreground/50"
+                  }`}
+                />
+              ))}
+            </div>
           </div>
 
-          {/* Typewriter tagline */}
-          <p
-            className="text-white/70 text-base md:text-xl max-w-lg font-light leading-relaxed"
-            style={{ animation: "hero-text-reveal 0.8s ease-out 0.9s both" }}
-          >
-            {tagline}
-            <span className="animate-pulse-soft text-agri-gold">|</span>
-          </p>
-
-          {/* Premium CTA buttons */}
-          <div
-            className="flex flex-wrap gap-4 pt-2"
-            style={{ animation: "hero-text-reveal 0.8s ease-out 1.1s both" }}
-          >
-            <Button asChild variant="hero" size="xl">
-              <Link to="/products">
-                <Sparkles className="h-5 w-5" /> Shop Now <ArrowRight className="h-5 w-5" />
-              </Link>
-            </Button>
-            <Button asChild variant="hero-outline" size="xl">
-              <a href="https://wa.me/923240287276" target="_blank" rel="noopener noreferrer">
-                Talk to Agronomist
-              </a>
-            </Button>
-          </div>
-
-          {/* Mini trust stats */}
-          <div
-            className="flex items-center gap-6 pt-4"
-            style={{ animation: "hero-text-reveal 0.8s ease-out 1.3s both" }}
-          >
+          {/* Floating stats on right (desktop) */}
+          <div className="hidden lg:flex flex-col gap-3 absolute right-8 top-1/2 -translate-y-1/2">
             {[
               { value: "12,500+", label: "Farmers" },
               { value: "35+", label: "Brands" },
               { value: "120+", label: "Cities" },
             ].map((stat, i) => (
-              <div key={i} className="text-center">
-                <p className="text-lg md:text-xl font-bold text-agri-gold">{stat.value}</p>
-                <p className="text-[10px] md:text-xs text-white/50 uppercase tracking-wider">{stat.label}</p>
+              <div
+                key={i}
+                className="bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/15 rounded-xl px-5 py-3 text-center"
+                style={{ animation: `fade-up 0.4s ease-out ${0.3 + i * 0.1}s both` }}
+              >
+                <p className="text-lg font-extrabold text-agri-gold">{stat.value}</p>
+                <p className="text-[10px] text-primary-foreground/60 uppercase tracking-wider font-semibold">{stat.label}</p>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Bottom fade to page background */}
-      <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-background to-transparent" />
+      {/* Category quick strip */}
+      <div className="bg-card border-b border-border/50">
+        <div className="container">
+          <div className="flex items-center gap-1 py-2 overflow-x-auto scrollbar-hide">
+            <span className="text-xs font-bold text-muted-foreground shrink-0 mr-2">Quick:</span>
+            {quickCategories.map(cat => (
+              <Link
+                key={cat.to}
+                to={cat.to}
+                className="shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors duration-200"
+              >
+                {cat.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Trust strip — 3 items inline */}
+      <div className="bg-secondary/50 border-b border-border/30">
+        <div className="container py-2.5">
+          <div className="flex items-center justify-center gap-6 md:gap-10 text-xs font-semibold text-muted-foreground">
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck className="h-4 w-4 text-primary" />
+              <span>100% Original</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Truck className="h-4 w-4 text-primary" />
+              <span>Free Delivery</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Banknote className="h-4 w-4 text-primary" />
+              <span>Cash on Delivery</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
