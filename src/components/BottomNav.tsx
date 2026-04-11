@@ -1,16 +1,19 @@
-import { Home, Search, Grid3X3, ShoppingCart, User } from "lucide-react";
+import { Home, Search, BookOpen, ShoppingCart, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-
-const items = [
-  { icon: Home, label: "Home", to: "/" },
-  { icon: Search, label: "Search", to: "/search" },
-  { icon: Grid3X3, label: "Categories", to: "/categories" },
-  { icon: ShoppingCart, label: "Cart", to: "/cart", badge: 2 },
-  { icon: User, label: "Account", to: "/account" },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function BottomNav() {
   const location = useLocation();
+  const { t } = useLanguage();
+
+  const items = [
+    { icon: Home, label: t("common.home"), to: "/" },
+    { icon: Search, label: t("common.search"), to: "/search" },
+    { icon: BookOpen, label: t("nav.education").split(" ")[0], to: "/education" },
+    { icon: ShoppingCart, label: t("common.cart"), to: "/cart", badge: 2 },
+    { icon: User, label: t("common.account"), to: "/account" },
+  ];
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
       <div className="bg-card border-t border-border/50 shadow-[0_-2px_12px_hsl(150_20%_10%/0.06)]">
