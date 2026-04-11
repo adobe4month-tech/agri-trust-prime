@@ -1,99 +1,137 @@
 
 
-# KissanCares Premium Redesign v3 — "Stay Ahead" Plan
+# KissanCares v4 — Revised Platform Expansion Plan
 
-## Core Insight
+## Scope Clarification
+- **No Lovable AI / Supabase** — pure frontend with mock data, structured for easy PHP backend integration
+- **No product listing page** — existing category links will point to `kissancares.com` directly
+- **Add Kissan Education / Blog page** — was missing from previous implementation
+- **Add remaining pages**: Sell With Us, FAQ, Track Order, enhanced 404
 
-You're right. Our current build has strong structural foundations (Shop by Crop, Shop by Problem, Trust Bar, Dual CTA, Technical Specs) that KissanGhar does NOT have. The problem is **execution quality** — the animations feel generic, the dark hero feels alien to Pakistani agri buyers, and the overall polish doesn't scream "premium."
+---
 
-The fix is NOT to copy KissanGhar's template look. It's to **keep our unique sections** and make them feel world-class, while cherry-picking the 3-4 things KissanGhar does better (sold counts, practical product cards, cash-on-delivery emphasis).
+## What Gets Built
 
-## What We Keep (Our Advantages Over KissanGhar)
-- Shop by Crop with Urdu labels (they don't have this)
-- Shop by Problem (unique to us)
-- Dual CTA (Add to Cart + WhatsApp) on PDP
-- Technical Specs Matrix on PDP
-- Animated trust counters
-- Premium card hover effects
+### 1. Roman Urdu Language Toggle (Global)
+- `src/contexts/LanguageContext.tsx` — React context with `en` / `ru` toggle, persisted in localStorage
+- `src/data/translations.ts` — key-value map for all UI strings (nav, CTAs, section headings, trust bar)
+- Toggle button in Header (simple "EN / اردو" switch)
+- All existing components updated to use `useLanguage()` hook for labels
+- Product data gets `nameUrdu`, `descriptionUrdu` fields in mockData
 
-## What We Steal From KissanGhar (3 things only)
-1. **"X Sold" count on product cards** — the single biggest missing trust signal
-2. **"Cash on Delivery" in Trust Bar** — critical for Pakistani market
-3. **"X People Watching" on PDP** — creates urgency
+**Key translations**: Add to Cart → Cart Mein Daalein, Shop by Crop → Fasal Ke Mutabiq, Weekly Sale → Hafta War Sale, Ask Agronomist → Maahir Se Poochein, Cash on Delivery → Ghar Par Payment
 
-## What Changes (Premium Execution Upgrade)
+### 2. Kissan Education / Blog Page
+**Route**: `/education`
+**File**: `src/pages/Education.tsx`
 
-### 1. Hero Section — From Dark Cinematic to Premium Light Carousel
-- Replace the dark parallax hero with a **clean, bright promotional banner carousel** (auto-rotating)
-- Light background, vibrant product imagery, seasonal messaging
-- Keep the animated stats but move them INTO the hero as floating glass badges
-- Add a **category quick-access strip** below the hero (horizontal scroll on mobile)
+- Hero banner: "Kissan Education — Apni Fasal Ka Khayal Rakhein"
+- Category tabs: All, Crop Guides, Pest & Disease, Seasonal Tips, Product Guides
+- Blog card grid: thumbnail, title, category tag, date, read time, excerpt
+- Mock blog data in `src/data/blogData.ts` (8-10 articles covering wheat care, rice pest control, cotton diseases, fertilizer guides — all bilingual)
+- Individual blog post page at `/education/:slug` with rich content layout
+- Sidebar: Popular articles, "Ask on WhatsApp" CTA, seasonal crop calendar widget
+- Each article ends with: related products from our catalog + WhatsApp CTA
 
-### 2. Product Cards — Add Social Proof + Micro-Animations
-- Add `soldCount` field to mock data
-- Show "🔥 2,039 Sold" badge on cards
-- Add subtle **skeleton loading shimmer** placeholder
-- Tighten spacing, make price bolder, brand more subtle
-- Add "Add to Cart" quick-action button on hover (desktop) / always visible (mobile)
+### 3. Sell With Us Page
+**Route**: `/sell-with-us`
+**File**: `src/pages/SellWithUs.tsx`
 
-### 3. Trust Bar — Add Cash on Delivery + Bilingual
-- Add "Cash on Delivery" (COD) — both competitors highlight this
-- Add Urdu micro-text under each trust point
-- Subtle slide-in animation instead of static reveal
+- Hero: "Apni Products Pakistan Bhar Mein Bechein"
+- Benefits grid (4 cards): Nationwide reach, 12,500+ farmers, marketing support, easy onboarding
+- How it works: 3-step visual process
+- Mock brand partner testimonial
+- CTA: WhatsApp inquiry button (links to wa.me)
 
-### 4. Homepage Sections — Tighter, More Polished
-- **ShopByCrop**: Add product count per crop ("45 Products"), add a subtle hover glow effect on crop cards
-- **ShopByProblem**: Replace emoji icons with proper Lucide icons for professional look
-- **FeaturedProducts**: Add countdown timer for "Weekly Sale" section, add horizontal scroll option on mobile
-- **FeaturedReviews**: Add video testimonial placeholder slots, add "Verified Purchase" with order ID hint
+### 4. FAQ Page
+**Route**: `/faq`
+**File**: `src/pages/FAQ.tsx`
 
-### 5. Product Detail Page — Premium Trust Upgrade
-- Add "👁 23 People Watching This" live indicator
-- Add "2,039 Sold" prominently near price
-- Add "First Purchase Discount" banner
-- Improve image gallery with pinch-to-zoom feel and swipe on mobile
-- Add "Related Products" carousel at bottom
-- Add sticky "Add to Cart" bar on mobile scroll
+- Accordion-style using existing shadcn Accordion component
+- Categories: Ordering, Delivery, Returns, Products
+- All answers in Roman Urdu + English
+- Bottom CTA: "Still confused? WhatsApp par poochein"
 
-### 6. Animations — Refined, Not Flashy
-- Replace typewriter effect with a clean **fade-up text reveal**
-- Keep scroll-reveal but make it faster (0.5s instead of 0.8s)
-- Add **number counting animation** only for stats (already have this)
-- Add subtle **parallax scroll** on crop images (2-3px shift, not dramatic)
-- Product card: smooth **image crossfade** on hover to second image
-- Remove floating orbs and grain texture — they add nothing for this audience
+### 5. Track Order Page
+**Route**: `/track`
+**File**: `src/pages/TrackOrder.tsx`
 
-### 7. Header — Cleaner, More Functional
-- Add phone number / WhatsApp number visible in top bar
-- Make search bar more prominent with category dropdown
-- Add "Track Order" link in header for returning buyers
-- Bilingual top bar: "پاکستان کا نمبر 1 زرعی سٹور"
+- Simple form: Order ID + Phone number
+- Mock status stepper (Order Placed → Processing → Shipped → Delivered)
+- WhatsApp CTA for live tracking assistance
 
-### 8. Mobile Bottom Nav — App-Like Polish
-- Add subtle haptic-feel press animation
-- Add cart badge count
-- Add "Categories" as a bottom sheet trigger
+### 6. Enhanced 404 Page
+- Roman Urdu friendly message
+- Search bar
+- 4 popular products grid
+- CTA buttons: Home & WhatsApp
 
-## Technical Changes Summary
+### 7. Psychological Triggers & CTAs (Homepage + PDP)
+- **Social proof ticker** (`src/components/SocialProofTicker.tsx`): "Muhammad Aslam from Multan ne abhi Spectar order kiya — 2 min pehle" — rotating mock notifications, bottom-left toast style
+- **Urgency banner** (sticky top on homepage): "Aaj Ki Deal: Spectar 20EC — Sirf Rs.1,450! Code: KISSAN10"
+- **Stock urgency on PDP**: "Sirf 12 Baqi Hain!" with low-stock warning color
+- **Cross-sell on PDP**: "Is Ke Saath Yeh Bhi Lein" — related products section
+- **Delivery estimate on PDP**: City dropdown → "Lahore: 2-3 Din Mein Delivery"
+- **Share buttons on PDP**: WhatsApp share (primary), Copy link
+- **Recently viewed** (localStorage): horizontal scroll section on homepage
 
-| File | Change |
+### 8. SEO Infrastructure (Frontend Only)
+- `src/components/SEOHead.tsx` using `react-helmet-async`
+- Dynamic title + meta description per page
+- JSON-LD structured data: Product schema on PDP, Organization on home, FAQ schema on FAQ page, Article schema on blog posts
+- Open Graph + Twitter card meta tags
+- Update `public/robots.txt` and create `public/sitemap.xml`
+- Proper `<h1>` hierarchy and semantic HTML on all pages
+- Breadcrumbs component with JSON-LD
+
+### 9. Footer & Navigation Updates
+- Footer: Add links to Education, FAQ, Sell With Us, Track Order
+- Header nav: Add Education link (already exists), ensure all new routes in mobile menu
+- All category links (Seeds, Pesticides, etc.) structured as `href` to kissancares.com PHP pages for easy backend linking
+- Bottom nav: Add Education icon
+
+---
+
+## Files Summary
+
+| File | Action |
 |------|--------|
-| `src/data/mockData.ts` | Add `soldCount`, `watchingCount` to Product interface |
-| `src/index.css` | Remove dark hero styles, add light carousel styles, refine animations to be faster/subtler |
-| `src/components/home/HeroSection.tsx` | Rebuild as light banner carousel with category strip |
-| `src/components/home/TrustBar.tsx` | Add COD, add Urdu sub-labels |
-| `src/components/home/ShopByProblem.tsx` | Replace emoji with Lucide icons |
-| `src/components/home/FeaturedProducts.tsx` | Add countdown timer for sale, mobile horizontal scroll |
-| `src/components/home/FeaturedReviews.tsx` | Add "Verified Purchase" badge enhancement |
-| `src/components/ProductCard.tsx` | Add "X Sold" badge, image crossfade on hover, quick Add to Cart |
-| `src/components/Header.tsx` | Add WhatsApp number, Track Order link, Urdu tagline |
-| `src/components/BottomNav.tsx` | Add category bottom sheet, cart count |
-| `src/pages/ProductDetail.tsx` | Add watching count, sold count, first purchase discount, related products, sticky mobile CTA |
-| `src/pages/Index.tsx` | Reorder sections, add category quick-strip |
-| `src/hooks/useAnimations.ts` | Speed up timings, remove typewriter, add image crossfade hook |
-| `tailwind.config.ts` | Add carousel keyframes, refine timing functions |
+| `src/contexts/LanguageContext.tsx` | NEW — Language toggle context |
+| `src/data/translations.ts` | NEW — EN + Roman Urdu strings |
+| `src/data/blogData.ts` | NEW — Mock blog articles |
+| `src/pages/Education.tsx` | NEW — Blog listing page |
+| `src/pages/BlogPost.tsx` | NEW — Individual blog post |
+| `src/pages/SellWithUs.tsx` | NEW — Seller partnership page |
+| `src/pages/FAQ.tsx` | NEW — FAQ accordion page |
+| `src/pages/TrackOrder.tsx` | NEW — Order tracking page |
+| `src/components/SEOHead.tsx` | NEW — Dynamic meta/SEO |
+| `src/components/Breadcrumbs.tsx` | NEW — Breadcrumb nav |
+| `src/components/SocialProofTicker.tsx` | NEW — "X just bought Y" toasts |
+| `src/components/ShareButtons.tsx` | NEW — WhatsApp/copy share |
+| `src/components/DeliveryEstimate.tsx` | NEW — City-based estimate |
+| `src/data/mockData.ts` | UPDATE — Add `nameUrdu`, `descriptionUrdu`, `stockCount` |
+| `src/components/Header.tsx` | UPDATE — Language toggle, new nav links |
+| `src/components/Footer.tsx` | UPDATE — New page links |
+| `src/components/BottomNav.tsx` | UPDATE — Education link |
+| `src/pages/ProductDetail.tsx` | UPDATE — Stock urgency, cross-sell, share, delivery estimate |
+| `src/pages/Index.tsx` | UPDATE — Urgency banner, social proof ticker, recently viewed |
+| `src/pages/NotFound.tsx` | UPDATE — Enhanced with search + products |
+| `src/App.tsx` | UPDATE — New routes, LanguageProvider, HelmetProvider |
+| `public/robots.txt` | UPDATE |
+| `public/sitemap.xml` | NEW |
 
-## Design Philosophy
+---
 
-**"Premium" for a Pakistani farmer means: organized, fast, trustworthy, and familiar — not dark and glowy.** We stay ahead of KissanGhar by having richer UX features (Shop by Problem, Crop browsing with Urdu, Technical Specs, Dual CTA) while matching their social proof signals (Sold counts, COD). The result: a site that feels like **Daraz-level polish** with **agri-specific intelligence**.
+## CTA Strategy Per Page
+
+| Page | Primary CTA | Secondary CTA |
+|------|------------|---------------|
+| Home | "Abhi Khareedein" on hero | WhatsApp FAB |
+| PDP | "Cart Mein Daalein" + "WhatsApp Par Poochein" | Share + Cross-sell |
+| Education | "Poora Parrhein" on cards | "Product Dekhein" in articles |
+| Blog Post | Related products + "Abhi Khareedein" | WhatsApp CTA |
+| Sell With Us | "WhatsApp Par Rabta Karein" | Phone call |
+| FAQ | "WhatsApp Par Poochein" | Browse Products |
+| Track Order | "Track Karein" | WhatsApp for help |
+| 404 | "Home Jaayein" | "Products Dekhein" |
 
