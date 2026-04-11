@@ -1,25 +1,27 @@
-import { Search, ShoppingCart, User, Menu, Phone, MapPin } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, Phone, MapPin, Globe } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-
-const navLinks = [
-  { label: "Home", to: "/" },
-  { label: "Seeds", to: "/products?category=seed" },
-  { label: "Pesticides", to: "/products?category=pesticide" },
-  { label: "Herbicides", to: "/products?category=herbicide" },
-  { label: "Fertilizers", to: "/products?category=fertilizer" },
-  { label: "Brands", to: "/brands" },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
+  const { language, setLanguage, t } = useLanguage();
+
+  const navLinks = [
+    { label: t("nav.home"), to: "/" },
+    { label: t("nav.seeds"), to: "/products?category=seed" },
+    { label: t("nav.pesticides"), to: "/products?category=pesticide" },
+    { label: t("nav.herbicides"), to: "/products?category=herbicide" },
+    { label: t("nav.fertilizers"), to: "/products?category=fertilizer" },
+    { label: t("nav.brands"), to: "/brands" },
+  ];
 
   return (
     <header className="sticky top-0 z-50 bg-card border-b border-border/50">
-      {/* Top bar — bilingual + contact */}
+      {/* Top bar */}
       <div className="bg-agri-deep">
         <div className="container flex items-center justify-between py-1.5">
           <p className="text-[11px] font-semibold text-primary-foreground/80 hidden sm:block" dir="rtl">
@@ -32,8 +34,16 @@ export default function Header() {
             </a>
             <span className="text-primary-foreground/30">|</span>
             <Link to="/track" className="text-[11px] text-primary-foreground/80 hover:text-agri-gold transition-colors font-semibold flex items-center gap-1">
-              <MapPin className="h-3 w-3" /> Track Order
+              <MapPin className="h-3 w-3" /> {t("nav.track")}
             </Link>
+            <span className="text-primary-foreground/30">|</span>
+            <button
+              onClick={() => setLanguage(language === "en" ? "ru" : "en")}
+              className="flex items-center gap-1 text-[11px] text-primary-foreground/80 hover:text-agri-gold transition-colors font-semibold"
+            >
+              <Globe className="h-3 w-3" />
+              {language === "en" ? "اردو" : "EN"}
+            </button>
           </div>
         </div>
       </div>
@@ -65,6 +75,15 @@ export default function Header() {
                   {l.label}
                 </Link>
               ))}
+              <Link to="/education" className="px-4 py-3 rounded-xl text-foreground hover:bg-primary/5 hover:text-primary transition-all font-semibold text-sm">
+                {t("nav.education")}
+              </Link>
+              <Link to="/sell-with-us" className="px-4 py-3 rounded-xl text-foreground hover:bg-primary/5 hover:text-primary transition-all font-semibold text-sm">
+                {language === "ru" ? "Hamare Saath Bechein" : "Sell With Us"}
+              </Link>
+              <Link to="/faq" className="px-4 py-3 rounded-xl text-foreground hover:bg-primary/5 hover:text-primary transition-all font-semibold text-sm">
+                FAQ
+              </Link>
             </div>
           </SheetContent>
         </Sheet>
@@ -85,7 +104,7 @@ export default function Header() {
           <div className="relative group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
             <Input
-              placeholder="Search seeds, pesticides, fertilizers..."
+              placeholder={language === "ru" ? "Beej, dawa, khaad talaash karein..." : "Search seeds, pesticides, fertilizers..."}
               className="pl-11 h-11 bg-secondary/60 border border-border rounded-xl text-sm focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:bg-card transition-all"
             />
           </div>
@@ -113,7 +132,7 @@ export default function Header() {
         <div className="container pb-3 md:hidden animate-fade-in">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search products..." className="pl-11 h-11 bg-secondary border-0 rounded-xl" autoFocus />
+            <Input placeholder={language === "ru" ? "Products talaash karein..." : "Search products..."} className="pl-11 h-11 bg-secondary border-0 rounded-xl" autoFocus />
           </div>
         </div>
       )}
@@ -127,7 +146,7 @@ export default function Header() {
             </Link>
           ))}
           <Link to="/education" className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors ml-auto">
-            Kissan Education
+            {t("nav.education")}
           </Link>
         </div>
       </nav>
