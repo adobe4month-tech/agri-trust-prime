@@ -9,6 +9,7 @@ export default function Footer() {
 
   const quickLinks = [
     { label: t("nav.home"), to: "/" },
+    { label: language === "ru" ? "Hamare Baare Mein" : "About Us", to: "/about" },
     { label: t("nav.education"), to: "/education" },
     { label: language === "ru" ? "Hamare Saath Bechein" : "Sell With Us", to: "/sell-with-us" },
     { label: "FAQ", to: "/faq" },
@@ -22,12 +23,19 @@ export default function Footer() {
     { label: t("nav.fertilizers"), to: "/products?category=fertilizer" },
   ];
 
+  const helpLinks = [
+    { label: language === "ru" ? "Rabta Karein" : "Contact Us", to: "/contact" },
+    { label: language === "ru" ? "Coupon Codes" : "Coupons", to: "/coupons" },
+    { label: language === "ru" ? "Tamam Brands" : "All Brands", to: "/brands" },
+    { label: "Seller Login", to: "/seller-login" },
+  ];
+
   return (
     <footer ref={ref} className="reveal-section relative bg-agri-deep text-primary-foreground pb-24 lg:pb-0 overflow-hidden">
       <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-primary/10 blur-[150px]" />
 
       <div className="container py-14 relative">
-        <div className="grid md:grid-cols-4 gap-10 md:gap-8">
+        <div className="grid md:grid-cols-5 gap-10 md:gap-8">
           <div className="md:col-span-1">
             <div className="flex items-center gap-2.5 mb-4">
               <div className="w-10 h-10 rounded-xl bg-primary-foreground/10 backdrop-blur-sm flex items-center justify-center">
@@ -68,6 +76,17 @@ export default function Footer() {
           </div>
 
           <div>
+            <h4 className="font-bold text-sm mb-5 text-primary-foreground/80 uppercase tracking-wider">{t("footer.helpCenter")}</h4>
+            <div className="space-y-3">
+              {helpLinks.map(l => (
+                <Link key={l.to} to={l.to} className="group flex items-center gap-1 text-sm text-primary-foreground/40 hover:text-agri-gold transition-colors duration-300">
+                  {l.label} <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div>
             <h4 className="font-bold text-sm mb-5 text-primary-foreground/80 uppercase tracking-wider">{t("footer.contactUs")}</h4>
             <div className="space-y-4">
               <a href="tel:+923240287276" className="flex items-center gap-3 text-sm text-primary-foreground/40 hover:text-agri-gold transition-colors group">
@@ -86,7 +105,7 @@ export default function Footer() {
                 <div className="w-8 h-8 rounded-lg bg-primary-foreground/5 flex items-center justify-center shrink-0">
                   <MapPin className="h-4 w-4" />
                 </div>
-                Pakistan
+                Sargodha, Punjab, Pakistan
               </div>
             </div>
           </div>

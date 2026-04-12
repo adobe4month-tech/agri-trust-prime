@@ -3,12 +3,22 @@ import { Star, Truck, ShoppingCart, Flame } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useCart } from "@/contexts/CartContext";
 import type { Product } from "@/data/mockData";
+import { toast } from "sonner";
 
 export default function ProductCard({ product }: { product: Product }) {
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
   const { language, t } = useLanguage();
+  const { addToCart } = useCart();
   const name = language === "ru" ? product.nameUrdu : product.name;
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart(product);
+    toast.success(language === "ru" ? `${product.nameUrdu} cart mein daal diya!` : `${product.name} added to cart!`);
+  };
 
   return (
     <div className="premium-card group block">
@@ -51,7 +61,7 @@ export default function ProductCard({ product }: { product: Product }) {
         </div>
       </Link>
       <div className="px-3.5 pb-3.5">
-        <Button variant="default" size="sm" className="w-full text-xs" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+        <Button variant="default" size="sm" className="w-full text-xs" onClick={handleAddToCart}>
           <ShoppingCart className="h-3.5 w-3.5" /> {t("product.addToCart")}
         </Button>
       </div>

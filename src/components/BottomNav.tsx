@@ -1,16 +1,18 @@
 import { Home, Search, BookOpen, ShoppingCart, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useCart } from "@/contexts/CartContext";
 
 export default function BottomNav() {
   const location = useLocation();
   const { t } = useLanguage();
+  const { totalItems } = useCart();
 
   const items = [
     { icon: Home, label: t("common.home"), to: "/" },
     { icon: Search, label: t("common.search"), to: "/search" },
     { icon: BookOpen, label: t("nav.education").split(" ")[0], to: "/education" },
-    { icon: ShoppingCart, label: t("common.cart"), to: "/cart", badge: 2 },
+    { icon: ShoppingCart, label: t("common.cart"), to: "/cart", badge: totalItems > 0 ? totalItems : undefined },
     { icon: User, label: t("common.account"), to: "/account" },
   ];
 
