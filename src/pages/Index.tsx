@@ -16,7 +16,7 @@ import { products } from "@/data/mockData";
 import ProductCard from "@/components/ProductCard";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Tag, X, Clock } from "lucide-react";
+import { Tag, X, Clock, Sparkles } from "lucide-react";
 
 function UrgencyBanner() {
   const [dismissed, setDismissed] = useState(false);
@@ -77,6 +77,31 @@ function RecentlyViewed() {
   );
 }
 
+function JustForYou() {
+  const { language, t } = useLanguage();
+  const picks = products.slice(0, 4);
+
+  return (
+    <section className="py-8">
+      <div className="container">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+            <Sparkles className="h-4 w-4 text-accent" />
+          </div>
+          <h2 className="text-lg font-extrabold text-foreground">
+            {language === "ru" ? "Aapke Liye Khaas" : "Just For You"}
+          </h2>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {picks.map(p => (
+            <ProductCard key={p.id} product={p} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 const Index = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -103,6 +128,7 @@ const Index = () => {
         <FeaturedProducts title="Latest Products" filter={(p) => p.category === "seed"} icon="sparkles" />
         <FeaturedReviews />
         <RecentlyViewed />
+        <JustForYou />
         <TrustBar />
         <BrandCarousel />
       </main>
