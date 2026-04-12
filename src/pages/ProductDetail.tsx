@@ -15,6 +15,8 @@ import { Badge } from "@/components/ui/badge";
 import { Star, ShieldCheck, Truck, ShoppingCart, MessageCircle, BadgeCheck, MapPin, Package, Clock, Eye, Flame, Tag, AlertTriangle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useScrollReveal } from "@/hooks/useAnimations";
+import { useCart } from "@/contexts/CartContext";
+import { toast } from "sonner";
 
 export default function ProductDetailPage() {
   const { slug } = useParams();
@@ -24,6 +26,13 @@ export default function ProductDetailPage() {
   const specsRef = useScrollReveal();
   const reviewsRef = useScrollReveal();
   const { language, t } = useLanguage();
+  const { addToCart } = useCart();
+
+  const handleAddToCart = () => {
+    if (!product) return;
+    addToCart(product, qty);
+    toast.success(language === "ru" ? `${product.nameUrdu} cart mein daal diya!` : `${product.name} added to cart!`);
+  };
 
   // Save to recently viewed
   useEffect(() => {
@@ -219,7 +228,7 @@ export default function ProductDetailPage() {
                 </div>
 
                 <div className="flex gap-3">
-                  <Button variant="hero" size="lg" className="flex-1">
+                  <Button variant="hero" size="lg" className="flex-1" onClick={handleAddToCart}>
                     <ShoppingCart className="h-4 w-4" /> {t("product.addToCart")}
                   </Button>
                   <Button asChild variant="whatsapp" size="lg" className="flex-1">
@@ -341,7 +350,7 @@ export default function ProductDetailPage() {
             <div className="flex-1">
               <p className="text-lg font-extrabold text-foreground">Rs.{product.price.toLocaleString()}</p>
             </div>
-            <Button variant="hero" size="default" className="flex-1">
+            <Button variant="hero" size="default" className="flex-1" onClick={handleAddToCart}>
               <ShoppingCart className="h-4 w-4" /> {t("product.addToCart")}
             </Button>
           </div>
