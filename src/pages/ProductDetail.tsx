@@ -9,10 +9,12 @@ import SEOHead from "@/components/SEOHead";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ShareButtons from "@/components/ShareButtons";
 import DeliveryEstimate from "@/components/DeliveryEstimate";
+import GuaranteeBadge from "@/components/GuaranteeBadge";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, ShieldCheck, Truck, ShoppingCart, MessageCircle, BadgeCheck, MapPin, Package, Clock, Eye, Flame, Tag, AlertTriangle } from "lucide-react";
+import { Star, ShieldCheck, Truck, ShoppingCart, MessageCircle, BadgeCheck, MapPin, Package, Clock, Eye, Flame, Tag, AlertTriangle, Heart, Users } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useScrollReveal } from "@/hooks/useAnimations";
 import { useCart } from "@/contexts/CartContext";
@@ -27,6 +29,16 @@ export default function ProductDetailPage() {
   const reviewsRef = useScrollReveal();
   const { language, t } = useLanguage();
   const { addToCart } = useCart();
+  const { toggleWishlist, isWishlisted } = useWishlist();
+
+  const handleWishlistToggle = () => {
+    if (!product) return;
+    toggleWishlist(product.id);
+    toast.success(isWishlisted(product.id)
+      ? (language === "ru" ? "Pasand se hataya" : "Removed from wishlist")
+      : (language === "ru" ? "Pasand mein daala!" : "Added to wishlist!")
+    );
+  };
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -185,6 +197,19 @@ export default function ProductDetailPage() {
                 </p>
               </div>
 
+              {/* Guarantee Badge */}
+              <GuaranteeBadge variant="full" />
+
+              {/* Daily buyers count */}
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Users className="h-3.5 w-3.5 text-primary" />
+                <span className="font-semibold">
+                  {language === "ru"
+                    ? `Aaj ${Math.floor(product.soldCount / 30)} logon ne khareeda`
+                    : `${Math.floor(product.soldCount / 30)} people bought this today`}
+                </span>
+              </div>
+
               {/* Price block */}
               <div className="premium-card p-4 bg-secondary/30">
                 <div className="flex items-baseline gap-3 mb-2">
@@ -211,6 +236,30 @@ export default function ProductDetailPage() {
                 </div>
               </div>
 
+              {/* Bulk Discount Table */}
+              <div className="premium-card p-4 bg-primary/3 border-primary/10">
+                <p className="text-xs font-extrabold text-foreground mb-2">
+                  {language === "ru" ? "Zyada Khareedein, Zyada Bachaayein!" : "Buy More, Save More!"}
+                </p>
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  {[
+                    { qty: "1", discount: "0%", label: language === "ru" ? "Ek" : "1 Unit" },
+                    { qty: "3+", discount: "10%", label: language === "ru" ? "3 ya zyada" : "3+ Units" },
+                    { qty: "5+", discount: "15%", label: language === "ru" ? "5 ya zyada" : "5+ Units" },
+                  ].map((tier, i) => (
+                    <div key={i} className={`rounded-lg p-2.5 border ${i === 2 ? "bg-primary/10 border-primary/20" : "bg-secondary/50 border-border/50"}`}>
+                      <p className="text-lg font-extrabold text-foreground">{tier.discount === "0%" ? "—" : tier.discount}</p>
+                      <p className="text-[10px] font-semibold text-muted-foreground">{tier.label}</p>
+                      {tier.discount !== "0%" && (
+                        <p className="text-[10px] font-bold text-primary mt-0.5">
+                          Rs.{Math.round(product.price * (1 - parseInt(tier.discount) / 100)).toLocaleString()}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               {/* Description */}
               {description && (
                 <p className="text-foreground/80 leading-relaxed text-sm">{description}</p>
@@ -231,16 +280,19 @@ export default function ProductDetailPage() {
                   <Button variant="hero" size="lg" className="flex-1" onClick={handleAddToCart}>
                     <ShoppingCart className="h-4 w-4" /> {t("product.addToCart")}
                   </Button>
-                  <Button asChild variant="whatsapp" size="lg" className="flex-1">
-                    <a
-                      href={`https://wa.me/923240287276?text=Hi, I'm interested in ${product.name} (Rs.${product.price}). Please share details.`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <MessageCircle className="h-4 w-4" /> {t("product.askAgronomist")}
-                    </a>
+                  <Button variant="outline" size="lg" onClick={handleWishlistToggle} className={isWishlisted(product.id) ? "text-sale border-sale/30" : ""}>
+                    <Heart className={`h-4 w-4 ${isWishlisted(product.id) ? "fill-current" : ""}`} />
                   </Button>
                 </div>
+                <Button asChild variant="whatsapp" size="lg" className="w-full">
+                  <a
+                    href={`https://wa.me/923240287276?text=${encodeURIComponent(`Hi, I'm interested in ${product.name} (Rs.${product.price}). Please share details.`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <MessageCircle className="h-4 w-4" /> {t("product.askAgronomist")}
+                  </a>
+                </Button>
               </div>
 
               {/* Share */}
