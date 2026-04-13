@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
-import { Star, Truck, ShoppingCart, Flame } from "lucide-react";
+import { Star, Truck, ShoppingCart, Flame, Heart, GitCompareArrows } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { useCompare } from "@/components/ProductCompare";
+import GuaranteeBadge from "@/components/GuaranteeBadge";
 import type { Product } from "@/data/mockData";
 import { toast } from "sonner";
 
@@ -11,13 +14,33 @@ export default function ProductCard({ product }: { product: Product }) {
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
   const { language, t } = useLanguage();
   const { addToCart } = useCart();
+  const { toggleWishlist, isWishlisted } = useWishlist();
+  const { toggleCompare, isComparing } = useCompare();
   const name = language === "ru" ? product.nameUrdu : product.name;
+  const wishlisted = isWishlisted(product.id);
+  const comparing = isComparing(product.id);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     addToCart(product);
     toast.success(language === "ru" ? `${product.nameUrdu} cart mein daal diya!` : `${product.name} added to cart!`);
+  };
+
+  const handleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleWishlist(product.id);
+    toast.success(wishlisted
+      ? (language === "ru" ? "Pasand se hataya" : "Removed from wishlist")
+      : (language === "ru" ? "Pasand mein daala!" : "Added to wishlist!")
+    );
+  };
+
+  const handleCompare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleCompare(product.id);
   };
 
   return (
@@ -33,9 +56,21 @@ export default function ProductCard({ product }: { product: Product }) {
               <Truck className="h-3 w-3" /> {t("product.free")}
             </span>
           )}
+          {/* Wishlist + Compare buttons */}
+          <div className="absolute bottom-2 right-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <button onClick={handleWishlist} className={`w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${wishlisted ? "bg-sale text-primary-foreground" : "bg-card/90 text-muted-foreground hover:text-sale"}`}>
+              <Heart className={`h-4 w-4 ${wishlisted ? "fill-current" : ""}`} />
+            </button>
+            <button onClick={handleCompare} className={`w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${comparing ? "bg-primary text-primary-foreground" : "bg-card/90 text-muted-foreground hover:text-primary"}`}>
+              <GitCompareArrows className="h-4 w-4" />
+            </button>
+          </div>
         </div>
         <div className="p-3.5">
-          <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mb-1">{product.brand}</p>
+          <div className="flex items-center gap-1.5 mb-1">
+            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{product.brand}</p>
+            <GuaranteeBadge variant="compact" />
+          </div>
           <h3 className="text-sm font-bold text-foreground leading-snug line-clamp-2 mb-2 group-hover:text-primary transition-colors duration-200">{name}</h3>
           <div className="flex items-center gap-2 mb-2.5">
             <div className="flex items-center gap-0.5">

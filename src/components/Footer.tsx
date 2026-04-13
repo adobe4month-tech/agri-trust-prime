@@ -27,7 +27,9 @@ export default function Footer() {
     { label: language === "ru" ? "Rabta Karein" : "Contact Us", to: "/contact" },
     { label: language === "ru" ? "Coupon Codes" : "Coupons", to: "/coupons" },
     { label: language === "ru" ? "Tamam Brands" : "All Brands", to: "/brands" },
+    { label: language === "ru" ? "Quote Mangwayein" : "Get Quote", to: "/get-quote" },
     { label: "Seller Login", to: "/seller-login" },
+    { label: language === "ru" ? "Policies" : "Privacy & Terms", to: "/privacy" },
   ];
 
   return (
