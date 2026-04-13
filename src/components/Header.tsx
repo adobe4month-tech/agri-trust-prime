@@ -1,4 +1,4 @@
-import { Search, ShoppingCart, User, Menu, Phone, MapPin, Globe } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, Phone, MapPin, Globe, Heart, FileText } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import CartDrawer from "@/components/CartDrawer";
 import AuthModal from "@/components/AuthModal";
 
@@ -15,6 +16,7 @@ export default function Header() {
   const [authOpen, setAuthOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
   const { totalItems } = useCart();
+  const { totalWishlist } = useWishlist();
 
   const navLinks = [
     { label: t("nav.home"), to: "/" },
@@ -103,6 +105,12 @@ export default function Header() {
                 <Link to="/faq" className="px-4 py-3 rounded-xl text-foreground hover:bg-primary/5 hover:text-primary transition-all font-semibold text-sm">
                   FAQ
                 </Link>
+                <Link to="/get-quote" className="px-4 py-3 rounded-xl text-foreground hover:bg-primary/5 hover:text-primary transition-all font-semibold text-sm">
+                  {language === "ru" ? "Quote Mangwayein" : "Get Quote"}
+                </Link>
+                <Link to="/privacy" className="px-4 py-3 rounded-xl text-foreground hover:bg-primary/5 hover:text-primary transition-all font-semibold text-sm">
+                  {language === "ru" ? "Policies" : "Policies"}
+                </Link>
               </div>
             </SheetContent>
           </Sheet>
@@ -134,8 +142,23 @@ export default function Header() {
             <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSearchOpen(!searchOpen)}>
               <Search className="h-5 w-5" />
             </Button>
+            <Button variant="ghost" size="icon" className="relative" asChild>
+              <Link to="/get-quote">
+                <FileText className="h-5 w-5" />
+              </Link>
+            </Button>
             <Button variant="ghost" size="icon" onClick={() => setAuthOpen(true)}>
               <User className="h-5 w-5" />
+            </Button>
+            <Button variant="ghost" size="icon" className="relative">
+              <Link to="/" onClick={(e) => { e.preventDefault(); }} className="relative">
+                <Heart className={`h-5 w-5 ${totalWishlist > 0 ? "text-sale" : ""}`} />
+                {totalWishlist > 0 && (
+                  <span className="absolute -top-2 -right-2 w-4 h-4 bg-sale text-primary-foreground text-[9px] font-bold rounded-full flex items-center justify-center">
+                    {totalWishlist}
+                  </span>
+                )}
+              </Link>
             </Button>
             <Button variant="ghost" size="icon" className="relative" onClick={() => setCartOpen(true)}>
               <ShoppingCart className="h-5 w-5" />
@@ -168,6 +191,9 @@ export default function Header() {
             ))}
             <Link to="/coupons" className="text-sm font-semibold text-accent hover:text-accent/80 transition-colors">
               🎟️ {language === "ru" ? "Coupons" : "Coupons"}
+            </Link>
+            <Link to="/get-quote" className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors">
+              {language === "ru" ? "Quote" : "Get Quote"}
             </Link>
             <Link to="/education" className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors ml-auto">
               {t("nav.education")}

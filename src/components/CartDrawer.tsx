@@ -2,7 +2,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { ShoppingCart, Trash2, Plus, Minus, MessageCircle } from "lucide-react";
+import { ShoppingCart, Trash2, Plus, Minus, MessageCircle, Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 
 interface CartDrawerProps {
   open: boolean;
@@ -12,10 +13,15 @@ interface CartDrawerProps {
 export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
   const { items, removeFromCart, updateQty, totalItems, totalPrice, clearCart } = useCart();
   const { language } = useLanguage();
+  const [showPreview, setShowPreview] = useState(false);
+
+  const buildWhatsAppMessage = () => {
+    const itemLines = items.map(i => `• ${i.product.name} x${i.qty} = Rs.${(i.product.price * i.qty).toLocaleString()}`).join("\n");
+    return `Assalam o Alaikum! I want to order:\n\n${itemLines}\n\nTotal: Rs.${totalPrice.toLocaleString()}\n\nPlease confirm.`;
+  };
 
   const handleWhatsAppCheckout = () => {
-    const itemLines = items.map(i => `• ${i.product.name} x${i.qty} = Rs.${(i.product.price * i.qty).toLocaleString()}`).join("%0A");
-    const msg = `Assalam o Alaikum! I want to order:%0A%0A${itemLines}%0A%0ATotal: Rs.${totalPrice.toLocaleString()}%0A%0APlease confirm.`;
+    const msg = encodeURIComponent(buildWhatsAppMessage());
     window.open(`https://wa.me/923240287276?text=${msg}`, "_blank");
   };
 
@@ -79,6 +85,21 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                 </span>
                 <span className="text-xl font-extrabold text-foreground">Rs.{totalPrice.toLocaleString()}</span>
               </div>
+
+              {/* WhatsApp Message Preview */}
+              <button
+                onClick={() => setShowPreview(!showPreview)}
+                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors"
+              >
+                {showPreview ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                {language === "ru" ? "WhatsApp message dekhein" : "Preview WhatsApp message"}
+              </button>
+              {showPreview && (
+                <div className="bg-[hsl(142,40%,95%)] border border-[hsl(142,40%,85%)] rounded-lg p-3 text-xs text-foreground whitespace-pre-wrap font-mono leading-relaxed max-h-32 overflow-y-auto">
+                  {buildWhatsAppMessage()}
+                </div>
+              )}
+
               <Button variant="hero" size="lg" className="w-full" onClick={handleWhatsAppCheckout}>
                 <MessageCircle className="h-4 w-4" />
                 {language === "ru" ? "WhatsApp Par Order Karein" : "Checkout via WhatsApp"}

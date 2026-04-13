@@ -10,13 +10,18 @@ import FeaturedProducts from "@/components/home/FeaturedProducts";
 import FeaturedReviews from "@/components/home/FeaturedReviews";
 import BrandCarousel from "@/components/home/BrandCarousel";
 import SocialProofTicker from "@/components/SocialProofTicker";
+import SeasonalCalendar from "@/components/home/SeasonalCalendar";
 import SEOHead from "@/components/SEOHead";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import { products } from "@/data/mockData";
 import ProductCard from "@/components/ProductCard";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Tag, X, Clock, Sparkles } from "lucide-react";
+import { Tag, X, Clock, Sparkles, Heart, RotateCcw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 function UrgencyBanner() {
   const [dismissed, setDismissed] = useState(false);
@@ -44,6 +49,7 @@ function UrgencyBanner() {
 
 function RecentlyViewed() {
   const { language, t } = useLanguage();
+  const { addToCart } = useCart();
   const [recentIds, setRecentIds] = useState<number[]>([]);
 
   useEffect(() => {
@@ -55,6 +61,11 @@ function RecentlyViewed() {
 
   const recentProducts = products.filter(p => recentIds.includes(p.id));
   if (recentProducts.length === 0) return null;
+
+  const handleReorder = (product: typeof products[0]) => {
+    addToCart(product);
+    toast.success(language === "ru" ? `${product.nameUrdu} cart mein daal diya!` : `${product.name} added to cart!`);
+  };
 
   return (
     <section className="py-8">
@@ -69,6 +80,15 @@ function RecentlyViewed() {
           {recentProducts.map(p => (
             <div key={p.id} className="shrink-0 w-44">
               <ProductCard product={p} />
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full mt-1 text-[10px] h-7"
+                onClick={() => handleReorder(p)}
+              >
+                <RotateCcw className="h-3 w-3" />
+                {language === "ru" ? "Dobara Order" : "Reorder"}
+              </Button>
             </div>
           ))}
         </div>
@@ -77,8 +97,36 @@ function RecentlyViewed() {
   );
 }
 
+function WishlistSection() {
+  const { language } = useLanguage();
+  const { wishlistIds } = useWishlist();
+  const wishlistProducts = products.filter(p => wishlistIds.includes(p.id));
+
+  if (wishlistProducts.length === 0) return null;
+
+  return (
+    <section className="py-8">
+      <div className="container">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 rounded-lg bg-sale/10 flex items-center justify-center">
+            <Heart className="h-4 w-4 text-sale" />
+          </div>
+          <h2 className="text-lg font-extrabold text-foreground">
+            {language === "ru" ? "Aapki Pasand" : "Your Wishlist"}
+          </h2>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {wishlistProducts.slice(0, 4).map(p => (
+            <ProductCard key={p.id} product={p} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function JustForYou() {
-  const { language, t } = useLanguage();
+  const { language } = useLanguage();
   const picks = products.slice(0, 4);
 
   return (
@@ -123,10 +171,12 @@ const Index = () => {
       <main className="flex-1">
         <HeroSection />
         <FeaturedProducts title="Weekly Sale" icon="flame" />
+        <SeasonalCalendar />
         <ShopByCrop />
         <ShopByProblem />
         <FeaturedProducts title="Latest Products" filter={(p) => p.category === "seed"} icon="sparkles" />
         <FeaturedReviews />
+        <WishlistSection />
         <RecentlyViewed />
         <JustForYou />
         <TrustBar />

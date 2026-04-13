@@ -6,6 +6,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { CartProvider } from "@/contexts/CartContext";
+import { WishlistProvider } from "@/contexts/WishlistContext";
+import { CompareProvider } from "@/components/ProductCompare";
 import Index from "./pages/Index.tsx";
 import ProductDetail from "./pages/ProductDetail.tsx";
 import Education from "./pages/Education.tsx";
@@ -18,6 +20,8 @@ import Contact from "./pages/Contact.tsx";
 import Coupons from "./pages/Coupons.tsx";
 import Brands from "./pages/Brands.tsx";
 import SellerLogin from "./pages/SellerLogin.tsx";
+import GetQuote from "./pages/GetQuote.tsx";
+import Privacy from "./pages/Privacy.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -26,29 +30,35 @@ const App = () => (
   <HelmetProvider>
     <LanguageProvider>
       <CartProvider>
-        <QueryClientProvider client={queryClient}>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/product/:slug" element={<ProductDetail />} />
-                <Route path="/education" element={<Education />} />
-                <Route path="/education/:slug" element={<BlogPost />} />
-                <Route path="/sell-with-us" element={<SellWithUs />} />
-                <Route path="/faq" element={<FAQ />} />
-                <Route path="/track" element={<TrackOrder />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/coupons" element={<Coupons />} />
-                <Route path="/brands" element={<Brands />} />
-                <Route path="/seller-login" element={<SellerLogin />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </QueryClientProvider>
+        <WishlistProvider>
+          <CompareProvider>
+            <QueryClientProvider client={queryClient}>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/product/:slug" element={<ProductDetail />} />
+                    <Route path="/education" element={<Education />} />
+                    <Route path="/education/:slug" element={<BlogPost />} />
+                    <Route path="/sell-with-us" element={<SellWithUs />} />
+                    <Route path="/faq" element={<FAQ />} />
+                    <Route path="/track" element={<TrackOrder />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/coupons" element={<Coupons />} />
+                    <Route path="/brands" element={<Brands />} />
+                    <Route path="/seller-login" element={<SellerLogin />} />
+                    <Route path="/get-quote" element={<GetQuote />} />
+                    <Route path="/privacy" element={<Privacy />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </BrowserRouter>
+              </TooltipProvider>
+            </QueryClientProvider>
+          </CompareProvider>
+        </WishlistProvider>
       </CartProvider>
     </LanguageProvider>
   </HelmetProvider>
