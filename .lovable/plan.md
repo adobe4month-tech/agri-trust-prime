@@ -1,109 +1,62 @@
 
 
-# Verification & Gap Analysis: KissanCares v4
+# KissanCares v5 — Refined Expansion Plan
 
-## What IS Built (Confirmed Working)
+## Removed (per your request)
+- ~~Kissan News page~~ (item 2)
+- ~~Free Delivery Progress Bar in cart~~ (item 4)
 
-| Feature | Status | Route/File |
-|---------|--------|------------|
-| Homepage with hero carousel, trust bar, shop by crop/problem, featured products, reviews, brands | Done | `/` |
-| Product Detail Page with stock urgency, cross-sell, share, delivery estimate, watching count | Done | `/product/:slug` |
-| Roman Urdu language toggle (global, localStorage) | Done | `LanguageContext.tsx` |
-| Kissan Education blog listing | Done | `/education` |
-| Individual blog post page | Done | `/education/:slug` |
-| Sell With Us page | Done | `/sell-with-us` |
-| FAQ page (accordion, bilingual) | Done | `/faq` |
-| Track Order page (mock stepper) | Done | `/track` |
-| Enhanced 404 with search + products | Done | `NotFound.tsx` |
-| Social proof ticker ("X just bought Y") | Done | `SocialProofTicker.tsx` |
-| Urgency banner (top sticky deal) | Done | `Index.tsx` |
-| Recently viewed (localStorage) | Done | `Index.tsx` |
-| SEO Head with JSON-LD | Done | `SEOHead.tsx` |
-| Breadcrumbs | Done | `Breadcrumbs.tsx` |
-| Share buttons (WhatsApp + copy) | Done | `ShareButtons.tsx` |
-| Delivery estimate (city-based) | Done | `DeliveryEstimate.tsx` |
-| WhatsApp FAB | Done | `WhatsAppFAB.tsx` |
-| Bottom nav (mobile) | Done | `BottomNav.tsx` |
-| Footer with all links | Done | `Footer.tsx` |
-| robots.txt + sitemap.xml | Done | `public/` |
+## What Gets Built
 
-## What is MISSING (Exists on kissancares.com but NOT in our build)
+### Phase 1: New Pages (2 pages)
 
-### 1. About Us Page
-kissancares.com has `/about` with company description, mission, brand image. We have no `/about` route.
+**Get Quote** (`/get-quote`) — Bulk/dealer inquiry form with Name, Phone, Type (Kissan/Dealer), Province, City, product description. WhatsApp fallback CTA. Bilingual. Mock submit with toast.
 
-### 2. Contact Us Page
-kissancares.com has `/contact` with address (Sargodha, Punjab), phone, email, and a contact form (name, email, subject, message). We have no `/contact` route.
+**Privacy & Terms** (`/privacy`) — Return policy, shipping policy, terms of use. Anchor-linked sections. Bilingual.
 
-### 3. Coupons Page
-kissancares.com has `/coupons` showing available discount codes. We have no coupons page.
+### Phase 2: Psychology Trigger Components (5 items)
 
-### 4. Cart Drawer / Sidebar
-kissancares.com has a slide-in cart ("Your cart is empty"). Our cart icon in header is non-functional -- no cart drawer, no add-to-cart state management, no cart count that updates.
+**Guarantee Badge** — `src/components/GuaranteeBadge.tsx` — "100% Asli Ya Paisa Wapas" shield icon. Added to ProductCard and ProductDetail page.
 
-### 5. Seller Account / Login
-kissancares.com has `/signin_seller` for seller authentication. Our "Sell With Us" page only has a WhatsApp CTA but no login/signup form for sellers.
+**Bulk Discount Indicator** — Tiered pricing table on PDP: 1 unit = full price, 3+ = 10% off, 5+ = 15% off. Visual badge.
 
-### 6. User Signup/Login (Buyer)
-kissancares.com likely has buyer authentication (for order history, saved addresses). We have a User icon in the header that does nothing.
+**Seasonal Crop Calendar** — `src/components/home/SeasonalCalendar.tsx` — Detects current month, shows Kharif/Rabi season with recommended products. Added to homepage.
 
-### 7. All Brands Page
-kissancares.com has `/companies.php` showing all 35+ brand partners. Our nav links to `/brands` which is a dead route (404).
+**Reorder Section** — Enhance recently viewed on homepage with "Dobara Order Karein" quick add-to-cart button.
 
-### 8. "Just For You" Section
-kissancares.com has a personalized "Just For You" product section on the homepage. We don't have this.
+**WhatsApp Order Preview** — Show formatted message preview in CartDrawer before redirecting to WhatsApp. Reduces ordering anxiety.
 
----
+### Phase 3: New Features (2 features)
 
-## Plan: Build Missing Pages & Features
+**Wishlist System** — `src/contexts/WishlistContext.tsx` with localStorage. Heart toggle on ProductCard and PDP. Wishlist count in Header. "Aapki Pasand" section on homepage.
 
-### Phase 1: Missing Pages (4 new pages)
+**Product Comparison** — `src/components/ProductCompare.tsx` — "Compare" checkbox on ProductCard (max 3). Floating comparison bar. Side-by-side table: Name, Price, Active Ingredient, Brand, Rating, Target Crop.
 
-**1. About Us** (`/about`) -- Company story, mission, team photo placeholder, brand partners summary, Sargodha address, bilingual
+### Phase 4: Navigation & Integration
 
-**2. Contact Us** (`/contact`) -- Contact form (name, email, subject, message), address/phone/email display, Google Maps embed placeholder, WhatsApp CTA
+- Add Get Quote link to Header nav, Footer, mobile menu
+- Add Wishlist heart icon to Header (beside cart)
+- Add Privacy/Terms link to Footer
+- Update `sitemap.xml` with new routes
+- Wire WishlistProvider in App.tsx
 
-**3. Coupons** (`/coupons`) -- Grid of mock coupon cards with codes, expiry dates, "Copy Code" button, bilingual labels
-
-**4. All Brands** (`/brands`) -- Grid of 35+ brand logos with names, links structured to point to `kissancares.com/products?company=X` for PHP integration
-
-### Phase 2: Cart Functionality
-
-**Cart State** -- React context (`CartContext.tsx`) with add/remove/update quantity, persisted in localStorage
-
-**Cart Drawer** -- Slide-in sheet from right, shows items, quantities, subtotal, "Checkout via WhatsApp" CTA (sends order summary to WhatsApp), "Continue Shopping" button
-
-**Connect existing buttons** -- "Add to Cart" on ProductCard and ProductDetail actually adds to cart, cart badge count in header updates live
-
-### Phase 3: Auth UI (Mock/Placeholder)
-
-**Login/Signup Modal** -- Triggered by User icon in header, phone number + OTP style form (Pakistan standard), mock only (no backend), structured for easy PHP session integration
-
-**Seller Login** -- `/seller-login` page with email/password form, "Register as Seller" link, mock only, styled to match the premium theme
-
-### Phase 4: Navigation & Footer Fixes
-
-- Add About Us, Contact Us, Coupons links to Footer and mobile nav
-- Fix `/brands` nav link to point to the new All Brands page
-- Add "Just For You" section to homepage (mock personalized picks)
-
-### Technical Changes
+## Files Summary
 
 | File | Action |
 |------|--------|
-| `src/pages/About.tsx` | NEW |
-| `src/pages/Contact.tsx` | NEW |
-| `src/pages/Coupons.tsx` | NEW |
-| `src/pages/Brands.tsx` | NEW |
-| `src/pages/SellerLogin.tsx` | NEW |
-| `src/contexts/CartContext.tsx` | NEW -- cart state management |
-| `src/components/CartDrawer.tsx` | NEW -- slide-in cart sheet |
-| `src/components/AuthModal.tsx` | NEW -- login/signup modal |
-| `src/App.tsx` | UPDATE -- add 5 new routes, CartProvider |
-| `src/components/Header.tsx` | UPDATE -- wire cart drawer, auth modal, fix brands link |
-| `src/components/Footer.tsx` | UPDATE -- add About, Contact, Coupons links |
-| `src/components/BottomNav.tsx` | UPDATE -- cart badge from context |
-| `src/components/ProductCard.tsx` | UPDATE -- wire addToCart from context |
-| `src/pages/ProductDetail.tsx` | UPDATE -- wire addToCart from context |
-| `src/pages/Index.tsx` | UPDATE -- add "Just For You" section |
+| `src/pages/GetQuote.tsx` | NEW |
+| `src/pages/Privacy.tsx` | NEW |
+| `src/components/GuaranteeBadge.tsx` | NEW |
+| `src/components/home/SeasonalCalendar.tsx` | NEW |
+| `src/components/ProductCompare.tsx` | NEW |
+| `src/contexts/WishlistContext.tsx` | NEW |
+| `src/App.tsx` | UPDATE — 2 new routes, WishlistProvider |
+| `src/components/CartDrawer.tsx` | UPDATE — WhatsApp message preview |
+| `src/components/ProductCard.tsx` | UPDATE — Wishlist heart, compare checkbox, guarantee badge |
+| `src/pages/ProductDetail.tsx` | UPDATE — Guarantee badge, bulk discount table |
+| `src/pages/Index.tsx` | UPDATE — Seasonal calendar, reorder buttons on recently viewed |
+| `src/components/Header.tsx` | UPDATE — Wishlist icon, Get Quote link |
+| `src/components/Footer.tsx` | UPDATE — Privacy, Get Quote links |
+| `src/components/BottomNav.tsx` | UPDATE — Wishlist icon |
+| `public/sitemap.xml` | UPDATE |
 
