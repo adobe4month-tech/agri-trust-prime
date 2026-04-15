@@ -28,6 +28,9 @@ export default function Footer() {
     { label: language === "ru" ? "Coupon Codes" : "Coupons", to: "/coupons" },
     { label: language === "ru" ? "Tamam Brands" : "All Brands", to: "/brands" },
     { label: language === "ru" ? "Quote Mangwayein" : "Get Quote", to: "/get-quote" },
+    { label: language === "ru" ? "Mandi Rates" : "Market Rates", to: "/market-rates" },
+    { label: language === "ru" ? "Videos" : "Videos", to: "/videos" },
+    { label: language === "ru" ? "Calculator" : "Dosage Calculator", to: "/calculator" },
     { label: "Seller Login", to: "/seller-login" },
     { label: language === "ru" ? "Policies" : "Privacy & Terms", to: "/privacy" },
   ];
@@ -113,7 +116,22 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-primary-foreground/10 mt-10 pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
+        {/* Newsletter */}
+        <div className="border-t border-primary-foreground/10 mt-10 pt-8 mb-8">
+          <div className="max-w-md mx-auto text-center">
+            <h4 className="font-bold text-sm text-primary-foreground/80 mb-2">
+              {language === "ru" ? "Naye Offers Aur Tips Paayen" : "Get Offers & Farming Tips"}
+            </h4>
+            <form className="flex gap-2" onSubmit={e => { e.preventDefault(); import("sonner").then(m => m.toast.success(language === "ru" ? "Subscribe ho gaya!" : "Subscribed!")); }}>
+              <input type="text" placeholder={language === "ru" ? "Phone number ya email..." : "Phone or email..."} className="flex-1 bg-primary-foreground/5 border border-primary-foreground/10 rounded-lg px-4 py-2.5 text-sm text-primary-foreground placeholder:text-primary-foreground/30 focus:outline-none focus:border-primary-foreground/30" />
+              <button type="submit" className="bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground font-bold text-xs px-4 rounded-lg transition-colors">
+                {language === "ru" ? "Subscribe" : "Subscribe"}
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div className="border-t border-primary-foreground/10 pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
           <p className="text-xs text-primary-foreground/30">{t("footer.copyright")}</p>
           <p className="text-xs text-primary-foreground/30">{t("footer.trustedBy")}</p>
         </div>

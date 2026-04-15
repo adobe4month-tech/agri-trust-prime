@@ -23,6 +23,11 @@ import SellerLogin from "./pages/SellerLogin.tsx";
 import GetQuote from "./pages/GetQuote.tsx";
 import Privacy from "./pages/Privacy.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import Products from "./pages/Products.tsx";
+import SearchResults from "./pages/SearchResults.tsx";
+import MarketRates from "./pages/MarketRates.tsx";
+import Videos from "./pages/Videos.tsx";
+import Calculator from "./pages/Calculator.tsx";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +57,11 @@ const App = () => (
                     <Route path="/seller-login" element={<SellerLogin />} />
                     <Route path="/get-quote" element={<GetQuote />} />
                     <Route path="/privacy" element={<Privacy />} />
+                    <Route path="/products" element={<Products />} />
+                    <Route path="/search" element={<SearchResults />} />
+                    <Route path="/market-rates" element={<MarketRates />} />
+                    <Route path="/videos" element={<Videos />} />
+                    <Route path="/calculator" element={<Calculator />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </BrowserRouter>

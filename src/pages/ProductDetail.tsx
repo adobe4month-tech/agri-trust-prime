@@ -10,6 +10,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import ShareButtons from "@/components/ShareButtons";
 import DeliveryEstimate from "@/components/DeliveryEstimate";
 import GuaranteeBadge from "@/components/GuaranteeBadge";
+import BundleDeal from "@/components/BundleDeal";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { Button } from "@/components/ui/button";
@@ -326,6 +327,11 @@ export default function ProductDetailPage() {
                 ))}
               </div>
             </div>
+          </div>
+
+          {/* Bundle Deal */}
+          <div className="mt-12">
+            <BundleDeal currentProduct={product} />
           </div>
 
           {/* Cross-sell */}
