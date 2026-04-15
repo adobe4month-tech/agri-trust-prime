@@ -1,6 +1,6 @@
 import { Search, ShoppingCart, User, Menu, Phone, MapPin, Globe, Heart, FileText } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -14,7 +14,9 @@ export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { language, setLanguage, t } = useLanguage();
+  const navigate = useNavigate();
   const { totalItems } = useCart();
   const { totalWishlist } = useWishlist();
 
@@ -127,15 +129,17 @@ export default function Header() {
           </Link>
 
           {/* Search */}
-          <div className="flex-1 max-w-xl mx-auto hidden md:block">
+          <form className="flex-1 max-w-xl mx-auto hidden md:block" onSubmit={e => { e.preventDefault(); if (searchQuery.trim()) navigate(`/search?q=${encodeURIComponent(searchQuery)}`); }}>
             <div className="relative group">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
               <Input
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
                 placeholder={language === "ru" ? "Beej, dawa, khaad talaash karein..." : "Search seeds, pesticides, fertilizers..."}
                 className="pl-11 h-11 bg-secondary/60 border border-border rounded-xl text-sm focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:bg-card transition-all"
               />
             </div>
-          </div>
+          </form>
 
           {/* Actions */}
           <div className="flex items-center gap-1 ml-auto">
@@ -173,12 +177,12 @@ export default function Header() {
 
         {/* Mobile search */}
         {searchOpen && (
-          <div className="container pb-3 md:hidden animate-fade-in">
+          <form className="container pb-3 md:hidden animate-fade-in" onSubmit={e => { e.preventDefault(); if (searchQuery.trim()) { navigate(`/search?q=${encodeURIComponent(searchQuery)}`); setSearchOpen(false); } }}>
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder={language === "ru" ? "Products talaash karein..." : "Search products..."} className="pl-11 h-11 bg-secondary border-0 rounded-xl" autoFocus />
+              <Input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder={language === "ru" ? "Products talaash karein..." : "Search products..."} className="pl-11 h-11 bg-secondary border-0 rounded-xl" autoFocus />
             </div>
-          </div>
+          </form>
         )}
 
         {/* Desktop nav */}
@@ -194,6 +198,15 @@ export default function Header() {
             </Link>
             <Link to="/get-quote" className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors">
               {language === "ru" ? "Quote" : "Get Quote"}
+            </Link>
+            <Link to="/market-rates" className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors">
+              {language === "ru" ? "Mandi Rates" : "Market Rates"}
+            </Link>
+            <Link to="/videos" className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors">
+              {language === "ru" ? "Videos" : "Videos"}
+            </Link>
+            <Link to="/calculator" className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors">
+              {language === "ru" ? "Calculator" : "Calculator"}
             </Link>
             <Link to="/education" className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors ml-auto">
               {t("nav.education")}
