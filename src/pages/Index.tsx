@@ -12,6 +12,7 @@ import BrandCarousel from "@/components/home/BrandCarousel";
 import SocialProofTicker from "@/components/SocialProofTicker";
 import SeasonalCalendar from "@/components/home/SeasonalCalendar";
 import SEOHead from "@/components/SEOHead";
+import InactivityCoupon from "@/components/InactivityCoupon";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
@@ -186,6 +187,7 @@ const Index = () => {
       <WhatsAppFAB />
       <SocialProofTicker />
       <BottomNav />
+      <InactivityCoupon />
     </div>
   );
 };
