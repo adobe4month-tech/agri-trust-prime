@@ -11,6 +11,7 @@ import ShareButtons from "@/components/ShareButtons";
 import DeliveryEstimate from "@/components/DeliveryEstimate";
 import GuaranteeBadge from "@/components/GuaranteeBadge";
 import BundleDeal from "@/components/BundleDeal";
+import StickyPDPBar from "@/components/StickyPDPBar";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { Button } from "@/components/ui/button";
@@ -277,10 +278,29 @@ export default function ProductDetailPage() {
                   </div>
                 </div>
 
-                <div className="flex gap-3">
-                  <Button variant="hero" size="lg" className="flex-1" onClick={handleAddToCart}>
-                    <ShoppingCart className="h-4 w-4" /> {t("product.addToCart")}
-                  </Button>
+                <div id="pdp-main-cta" className="flex gap-3">
+                  {product.stockStatus === "sold-out" || product.stockStatus === "coming-soon" ? (
+                    <Button asChild variant="whatsapp" size="lg" className="flex-1">
+                      <a
+                        href={`https://wa.me/923240287276?text=${encodeURIComponent(
+                          language === "ru"
+                            ? `Salaam! Mujhe ${product.nameUrdu} stock mein aane par WhatsApp par batayein.`
+                            : `Hello! Please notify me when ${product.name} is back in stock.`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <MessageCircle className="h-4 w-4" />
+                        {product.stockStatus === "coming-soon"
+                          ? (language === "ru" ? "Aane Par Batayein" : "Notify When Available")
+                          : (language === "ru" ? "Stock Aane Par Batayein" : "Notify When In Stock")}
+                      </a>
+                    </Button>
+                  ) : (
+                    <Button variant="hero" size="lg" className="flex-1" onClick={handleAddToCart}>
+                      <ShoppingCart className="h-4 w-4" /> {t("product.addToCart")}
+                    </Button>
+                  )}
                   <Button variant="outline" size="lg" onClick={handleWishlistToggle} className={isWishlisted(product.id) ? "text-sale border-sale/30" : ""}>
                     <Heart className={`h-4 w-4 ${isWishlisted(product.id) ? "fill-current" : ""}`} />
                   </Button>
@@ -403,16 +423,7 @@ export default function ProductDetailPage() {
         </div>
 
         {/* Sticky Mobile CTA */}
-        <div className="fixed bottom-16 left-0 right-0 z-40 lg:hidden bg-card/95 backdrop-blur-sm border-t border-border/50 px-4 py-2.5">
-          <div className="flex items-center gap-3">
-            <div className="flex-1">
-              <p className="text-lg font-extrabold text-foreground">Rs.{product.price.toLocaleString()}</p>
-            </div>
-            <Button variant="hero" size="default" className="flex-1" onClick={handleAddToCart}>
-              <ShoppingCart className="h-4 w-4" /> {t("product.addToCart")}
-            </Button>
-          </div>
-        </div>
+        <StickyPDPBar product={product} onAddToCart={handleAddToCart} />
       </main>
       <Footer />
       <WhatsAppFAB />
