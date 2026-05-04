@@ -171,6 +171,7 @@ const Index = () => {
       <Header />
       <main className="flex-1">
         <HeroSection />
+        <TrustBar />
         <FeaturedProducts title="Weekly Sale" icon="flame" />
         <SeasonalCalendar />
         <ShopByCrop />
@@ -180,7 +181,6 @@ const Index = () => {
         <WishlistSection />
         <RecentlyViewed />
         <JustForYou />
-        <TrustBar />
         <BrandCarousel />
       </main>
       <Footer />
