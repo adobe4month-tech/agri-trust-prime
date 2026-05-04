@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Star, Truck, ShoppingCart, Flame, Heart, GitCompareArrows } from "lucide-react";
+import { Star, Truck, ShoppingCart, Flame, Heart, GitCompareArrows, MessageCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -19,6 +19,14 @@ export default function ProductCard({ product }: { product: Product }) {
   const name = language === "ru" ? product.nameUrdu : product.name;
   const wishlisted = isWishlisted(product.id);
   const comparing = isComparing(product.id);
+  const isSoldOut = product.stockStatus === "sold-out";
+  const isComingSoon = product.stockStatus === "coming-soon";
+  const isUnavailable = isSoldOut || isComingSoon;
+  const notifyHref = `https://wa.me/923240287276?text=${encodeURIComponent(
+    language === "ru"
+      ? `Salaam! Mujhe ${product.nameUrdu} stock mein aane par WhatsApp par batayein.`
+      : `Hello! Please notify me when ${product.name} is back in stock.`
+  )}`;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -55,6 +63,15 @@ export default function ProductCard({ product }: { product: Product }) {
             <span className="absolute top-2.5 right-2.5 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-0.5">
               <Truck className="h-3 w-3" /> {t("product.free")}
             </span>
+          )}
+          {isUnavailable && (
+            <div className="absolute inset-0 bg-background/70 backdrop-blur-[1px] flex items-center justify-center">
+              <span className={`text-[11px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider shadow-md ${isSoldOut ? "bg-sale text-primary-foreground" : "bg-agri-gold text-foreground"}`}>
+                {isSoldOut
+                  ? (language === "ru" ? "Stock Khatam" : "Sold Out")
+                  : (language === "ru" ? "Jald Aaraha" : "Coming Soon")}
+              </span>
+            </div>
           )}
           {/* Wishlist + Compare buttons */}
           <div className="absolute bottom-2 right-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -96,9 +113,18 @@ export default function ProductCard({ product }: { product: Product }) {
         </div>
       </Link>
       <div className="px-3.5 pb-3.5">
-        <Button variant="default" size="sm" className="w-full text-xs" onClick={handleAddToCart}>
-          <ShoppingCart className="h-3.5 w-3.5" /> {t("product.addToCart")}
-        </Button>
+        {isUnavailable ? (
+          <Button asChild variant="whatsapp" size="sm" className="w-full text-xs" onClick={(e) => e.stopPropagation()}>
+            <a href={notifyHref} target="_blank" rel="noopener noreferrer">
+              <MessageCircle className="h-3.5 w-3.5" />
+              {language === "ru" ? "Notify Karein" : "Notify Me"}
+            </a>
+          </Button>
+        ) : (
+          <Button variant="default" size="sm" className="w-full text-xs" onClick={handleAddToCart}>
+            <ShoppingCart className="h-3.5 w-3.5" /> {t("product.addToCart")}
+          </Button>
+        )}
       </div>
     </div>
   );
