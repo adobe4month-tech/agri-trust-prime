@@ -24,6 +24,7 @@ export interface Product {
   targetProblems?: string[];
   shortDescription?: string;
   shortDescriptionUrdu?: string;
+  stockStatus?: "in-stock" | "low-stock" | "sold-out" | "coming-soon";
 }
 
 export interface Review {
