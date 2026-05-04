@@ -114,6 +114,7 @@ export const products: Product[] = [
     targetCrops: ["Vegetables"], targetProblems: [],
     shortDescription: "High-yield round Kaddu seeds for summer vegetable farming.",
     shortDescriptionUrdu: "Garmi ki sabzi farming ke liye zyada paidawar wale gol Kaddu ke beej.",
+    stockStatus: "sold-out",
   },
   {
     id: 311, name: "Hybrid Brinjal Janak F1 10g", nameUrdu: "Hybrid Baingan Janak F1 10g", slug: "hybrid-brinjal-janak-f1",
@@ -142,6 +143,7 @@ export const products: Product[] = [
     targetCrops: ["Rice"], targetProblems: ["Pest Control"],
     shortDescription: "Granular insecticide for rice borer and leaf folder control.",
     shortDescriptionUrdu: "Chawal ke tana chedak aur patti lapetne wale keere ke liye daanedar dawa.",
+    stockStatus: "coming-soon",
   },
   {
     id: 304, name: "Cartap Hydrochloride 4% 9kg", nameUrdu: "Cartap Hydrochloride 4% 9kg", slug: "cartap-hydrochloride-4-9kg",
