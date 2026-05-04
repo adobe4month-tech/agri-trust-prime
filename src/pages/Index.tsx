@@ -181,7 +181,6 @@ const Index = () => {
         <WishlistSection />
         <RecentlyViewed />
         <JustForYou />
-        <TrustBar />
         <BrandCarousel />
       </main>
       <Footer />
