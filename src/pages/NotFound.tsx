@@ -15,7 +15,24 @@ import { Home, Search, MessageCircle } from "lucide-react";
 const NotFound = () => {
   const location = useLocation();
   const { language, t } = useLanguage();
-  const popularProducts = products.slice(0, 4);
+
+  // Smart suggestions: tokenize the attempted URL and match against product names/brands/crops
+  const tokens = location.pathname
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .split(/[\s/-]+/)
+    .filter(t => t.length > 2);
+
+  const scored = products
+    .map(p => {
+      const haystack = `${p.name} ${p.nameUrdu} ${p.brand} ${p.category} ${(p.targetCrops || []).join(" ")}`.toLowerCase();
+      const score = tokens.reduce((acc, tk) => acc + (haystack.includes(tk) ? 1 : 0), 0);
+      return { p, score };
+    })
+    .sort((a, b) => b.score - a.score);
+
+  const hasMatches = scored[0]?.score > 0;
+  const popularProducts = (hasMatches ? scored.filter(s => s.score > 0) : scored).slice(0, 4).map(s => s.p);
 
   useEffect(() => {
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);
@@ -55,9 +72,13 @@ const NotFound = () => {
             </div>
           </div>
 
-          {/* Popular products */}
+          {/* Popular / suggested products */}
           <div className="mt-12">
-            <h3 className="text-lg font-extrabold text-foreground mb-4">{t("404.popular")}</h3>
+            <h3 className="text-lg font-extrabold text-foreground mb-4">
+              {hasMatches
+                ? (language === "ru" ? "Shayad aap yeh dhoond rahe hain" : "You might be looking for")
+                : t("404.popular")}
+            </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto">
               {popularProducts.map(p => (
                 <ProductCard key={p.id} product={p} />
