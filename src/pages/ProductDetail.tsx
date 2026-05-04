@@ -11,6 +11,7 @@ import ShareButtons from "@/components/ShareButtons";
 import DeliveryEstimate from "@/components/DeliveryEstimate";
 import GuaranteeBadge from "@/components/GuaranteeBadge";
 import BundleDeal from "@/components/BundleDeal";
+import StickyPDPBar from "@/components/StickyPDPBar";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { Button } from "@/components/ui/button";
@@ -422,16 +423,7 @@ export default function ProductDetailPage() {
         </div>
 
         {/* Sticky Mobile CTA */}
-        <div className="fixed bottom-16 left-0 right-0 z-40 lg:hidden bg-card/95 backdrop-blur-sm border-t border-border/50 px-4 py-2.5">
-          <div className="flex items-center gap-3">
-            <div className="flex-1">
-              <p className="text-lg font-extrabold text-foreground">Rs.{product.price.toLocaleString()}</p>
-            </div>
-            <Button variant="hero" size="default" className="flex-1" onClick={handleAddToCart}>
-              <ShoppingCart className="h-4 w-4" /> {t("product.addToCart")}
-            </Button>
-          </div>
-        </div>
+        <StickyPDPBar product={product} onAddToCart={handleAddToCart} />
       </main>
       <Footer />
       <WhatsAppFAB />
