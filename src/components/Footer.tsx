@@ -31,8 +31,15 @@ export default function Footer() {
     { label: language === "ru" ? "Mandi Rates" : "Market Rates", to: "/market-rates" },
     { label: language === "ru" ? "Videos" : "Videos", to: "/videos" },
     { label: language === "ru" ? "Calculator" : "Dosage Calculator", to: "/calculator" },
+    { label: language === "ru" ? "Hamare Stores" : "Store Locator", to: "/stores" },
+  ];
+
+  const policyLinks = [
+    { label: language === "ru" ? "Wapsi & Refund" : "Returns & Refunds", to: "/returns" },
+    { label: language === "ru" ? "Shipping" : "Shipping Policy", to: "/shipping" },
+    { label: language === "ru" ? "Shara'it" : "Terms & Conditions", to: "/terms" },
+    { label: language === "ru" ? "Privacy" : "Privacy Policy", to: "/privacy" },
     { label: "Seller Login", to: "/seller-login" },
-    { label: language === "ru" ? "Policies" : "Privacy & Terms", to: "/privacy" },
   ];
 
   return (
