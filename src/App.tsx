@@ -28,6 +28,17 @@ import SearchResults from "./pages/SearchResults.tsx";
 import MarketRates from "./pages/MarketRates.tsx";
 import Videos from "./pages/Videos.tsx";
 import Calculator from "./pages/Calculator.tsx";
+import Cart from "./pages/Cart.tsx";
+import Checkout from "./pages/Checkout.tsx";
+import OrderSuccess from "./pages/OrderSuccess.tsx";
+import Wishlist from "./pages/Wishlist.tsx";
+import Compare from "./pages/Compare.tsx";
+import Account from "./pages/Account.tsx";
+import Returns from "./pages/Returns.tsx";
+import Shipping from "./pages/Shipping.tsx";
+import Terms from "./pages/Terms.tsx";
+import Stores from "./pages/Stores.tsx";
+import SEOLanding from "./pages/SEOLanding.tsx";
 
 const queryClient = new QueryClient();
 
