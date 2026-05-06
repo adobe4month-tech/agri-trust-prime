@@ -12,6 +12,12 @@ import DeliveryEstimate from "@/components/DeliveryEstimate";
 import GuaranteeBadge from "@/components/GuaranteeBadge";
 import BundleDeal from "@/components/BundleDeal";
 import StickyPDPBar from "@/components/StickyPDPBar";
+import ScarcityIndicator from "@/components/ScarcityIndicator";
+import CountdownTimer from "@/components/CountdownTimer";
+import PhotoReviews from "@/components/PhotoReviews";
+import ProductQA from "@/components/ProductQA";
+import ProductVariants from "@/components/ProductVariants";
+import CertificatesSection from "@/components/CertificatesSection";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { Button } from "@/components/ui/button";
@@ -349,9 +355,25 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
+          {/* Variants + Scarcity + Countdown + Certificates */}
+          <div className="mt-10 grid md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <ProductVariants basePrice={product.price} />
+              <ScarcityIndicator stock={product.stockCount} />
+              <CountdownTimer hours={6} />
+            </div>
+            <CertificatesSection brand={product.brand} />
+          </div>
+
           {/* Bundle Deal */}
           <div className="mt-12">
             <BundleDeal currentProduct={product} />
+          </div>
+
+          {/* Photo Reviews + Q&A */}
+          <div className="mt-12 grid lg:grid-cols-2 gap-8">
+            <PhotoReviews />
+            <ProductQA />
           </div>
 
           {/* Cross-sell */}

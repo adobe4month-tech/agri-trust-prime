@@ -31,8 +31,15 @@ export default function Footer() {
     { label: language === "ru" ? "Mandi Rates" : "Market Rates", to: "/market-rates" },
     { label: language === "ru" ? "Videos" : "Videos", to: "/videos" },
     { label: language === "ru" ? "Calculator" : "Dosage Calculator", to: "/calculator" },
+    { label: language === "ru" ? "Hamare Stores" : "Store Locator", to: "/stores" },
+  ];
+
+  const policyLinks = [
+    { label: language === "ru" ? "Wapsi & Refund" : "Returns & Refunds", to: "/returns" },
+    { label: language === "ru" ? "Shipping" : "Shipping Policy", to: "/shipping" },
+    { label: language === "ru" ? "Shara'it" : "Terms & Conditions", to: "/terms" },
+    { label: language === "ru" ? "Privacy" : "Privacy Policy", to: "/privacy" },
     { label: "Seller Login", to: "/seller-login" },
-    { label: language === "ru" ? "Policies" : "Privacy & Terms", to: "/privacy" },
   ];
 
   return (
@@ -40,7 +47,7 @@ export default function Footer() {
       <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-primary/10 blur-[150px]" />
 
       <div className="container py-14 relative">
-        <div className="grid md:grid-cols-5 gap-10 md:gap-8">
+        <div className="grid md:grid-cols-6 gap-10 md:gap-8">
           <div className="md:col-span-1">
             <div className="flex items-center gap-2.5 mb-4">
               <div className="w-10 h-10 rounded-xl bg-primary-foreground/10 backdrop-blur-sm flex items-center justify-center">
@@ -84,6 +91,17 @@ export default function Footer() {
             <h4 className="font-bold text-sm mb-5 text-primary-foreground/80 uppercase tracking-wider">{t("footer.helpCenter")}</h4>
             <div className="space-y-3">
               {helpLinks.map(l => (
+                <Link key={l.to} to={l.to} className="group flex items-center gap-1 text-sm text-primary-foreground/40 hover:text-agri-gold transition-colors duration-300">
+                  {l.label} <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-sm mb-5 text-primary-foreground/80 uppercase tracking-wider">{language === "ru" ? "Policies" : "Policies"}</h4>
+            <div className="space-y-3">
+              {policyLinks.map(l => (
                 <Link key={l.to} to={l.to} className="group flex items-center gap-1 text-sm text-primary-foreground/40 hover:text-agri-gold transition-colors duration-300">
                   {l.label} <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Link>
