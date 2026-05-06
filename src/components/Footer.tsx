@@ -47,7 +47,7 @@ export default function Footer() {
       <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-primary/10 blur-[150px]" />
 
       <div className="container py-14 relative">
-        <div className="grid md:grid-cols-5 gap-10 md:gap-8">
+        <div className="grid md:grid-cols-6 gap-10 md:gap-8">
           <div className="md:col-span-1">
             <div className="flex items-center gap-2.5 mb-4">
               <div className="w-10 h-10 rounded-xl bg-primary-foreground/10 backdrop-blur-sm flex items-center justify-center">
