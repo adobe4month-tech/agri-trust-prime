@@ -73,6 +73,20 @@ const App = () => (
                     <Route path="/market-rates" element={<MarketRates />} />
                     <Route path="/videos" element={<Videos />} />
                     <Route path="/calculator" element={<Calculator />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/order-success" element={<OrderSuccess />} />
+                    <Route path="/wishlist" element={<Wishlist />} />
+                    <Route path="/compare" element={<Compare />} />
+                    <Route path="/account" element={<Account />} />
+                    <Route path="/returns" element={<Returns />} />
+                    <Route path="/shipping" element={<Shipping />} />
+                    <Route path="/terms" element={<Terms />} />
+                    <Route path="/stores" element={<Stores />} />
+                    <Route path="/category/:slug" element={<SEOLanding mode="category" />} />
+                    <Route path="/brand/:slug" element={<SEOLanding mode="brand" />} />
+                    <Route path="/crop/:slug" element={<SEOLanding mode="crop" />} />
+                    <Route path="/problem/:slug" element={<SEOLanding mode="problem" />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </BrowserRouter>
