@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
 import Footer from "@/components/Footer";
+import PartnerLogos from "@/components/PartnerLogos";
 import WhatsAppFAB from "@/components/WhatsAppFAB";
 import HeroSection from "@/components/home/HeroSection";
 import TrustBar from "@/components/home/TrustBar";
