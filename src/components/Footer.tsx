@@ -99,6 +99,17 @@ export default function Footer() {
           </div>
 
           <div>
+            <h4 className="font-bold text-sm mb-5 text-primary-foreground/80 uppercase tracking-wider">{language === "ru" ? "Policies" : "Policies"}</h4>
+            <div className="space-y-3">
+              {policyLinks.map(l => (
+                <Link key={l.to} to={l.to} className="group flex items-center gap-1 text-sm text-primary-foreground/40 hover:text-agri-gold transition-colors duration-300">
+                  {l.label} <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div>
             <h4 className="font-bold text-sm mb-5 text-primary-foreground/80 uppercase tracking-wider">{t("footer.contactUs")}</h4>
             <div className="space-y-4">
               <a href="tel:+923240287276" className="flex items-center gap-3 text-sm text-primary-foreground/40 hover:text-agri-gold transition-colors group">
