@@ -355,9 +355,25 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
+          {/* Variants + Scarcity + Countdown + Certificates */}
+          <div className="mt-10 grid md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <ProductVariants basePrice={product.price} />
+              <ScarcityIndicator stock={product.stockCount} />
+              <CountdownTimer hours={6} />
+            </div>
+            <CertificatesSection brand={product.brand} />
+          </div>
+
           {/* Bundle Deal */}
           <div className="mt-12">
             <BundleDeal currentProduct={product} />
+          </div>
+
+          {/* Photo Reviews + Q&A */}
+          <div className="mt-12 grid lg:grid-cols-2 gap-8">
+            <PhotoReviews />
+            <ProductQA />
           </div>
 
           {/* Cross-sell */}
