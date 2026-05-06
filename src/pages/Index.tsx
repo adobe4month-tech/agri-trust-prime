@@ -183,6 +183,7 @@ const Index = () => {
         <JustForYou />
         <BrandCarousel />
       </main>
+      <PartnerLogos />
       <Footer />
       <WhatsAppFAB />
       <SocialProofTicker />
