@@ -100,16 +100,19 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                 </div>
               )}
 
-              <Button variant="hero" size="lg" className="w-full" onClick={handleWhatsAppCheckout}>
+              <Button asChild variant="hero" size="lg" className="w-full" onClick={() => onOpenChange(false)}>
+                <a href="/cart">{language === "ru" ? "Cart Dekhein & Checkout" : "View Cart & Checkout"}</a>
+              </Button>
+              <Button variant="outline" size="lg" className="w-full" onClick={handleWhatsAppCheckout}>
                 <MessageCircle className="h-4 w-4" />
-                {language === "ru" ? "WhatsApp Par Order Karein" : "Checkout via WhatsApp"}
+                {language === "ru" ? "Seedha WhatsApp Order" : "Quick WhatsApp Order"}
               </Button>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" className="flex-1" onClick={() => onOpenChange(false)}>
+                <Button variant="ghost" size="sm" className="flex-1" onClick={() => onOpenChange(false)}>
                   {language === "ru" ? "Aur Khareedein" : "Continue Shopping"}
                 </Button>
                 <Button variant="ghost" size="sm" onClick={clearCart} className="text-destructive hover:text-destructive">
-                  {language === "ru" ? "Cart Saaf Karein" : "Clear Cart"}
+                  {language === "ru" ? "Cart Saaf Karein" : "Clear"}
                 </Button>
               </div>
             </div>
