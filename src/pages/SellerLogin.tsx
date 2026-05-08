@@ -9,15 +9,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Store, ArrowRight, MessageCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useState } from "react";
 
 export default function SellerLogin() {
   const { language, t } = useLanguage();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast.info(language === "ru" ? "Seller login backend se connect hoga — jald!" : "Seller login will connect to backend — coming soon!");
+    if (!email) return;
+    localStorage.setItem("kc-seller", email);
+    toast.success(language === "ru" ? "Login kaamyab!" : "Logged in!");
+    navigate("/seller");
   };
 
   return (
