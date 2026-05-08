@@ -39,6 +39,22 @@ import Shipping from "./pages/Shipping.tsx";
 import Terms from "./pages/Terms.tsx";
 import Stores from "./pages/Stores.tsx";
 import SEOLanding from "./pages/SEOLanding.tsx";
+import Loyalty from "./pages/Loyalty.tsx";
+import Refer from "./pages/Refer.tsx";
+import QuoteSuccess from "./pages/QuoteSuccess.tsx";
+import ReturnRequest from "./pages/ReturnRequest.tsx";
+import SellerDashboard from "./pages/seller/Dashboard.tsx";
+import SellerInventory from "./pages/seller/Inventory.tsx";
+import SellerOrders from "./pages/seller/Orders.tsx";
+import SellerPayouts from "./pages/seller/Payouts.tsx";
+import AccountProfile from "./pages/account/Profile.tsx";
+import AccountOrders from "./pages/account/Orders.tsx";
+import AccountAddresses from "./pages/account/Addresses.tsx";
+import AccountWishlist from "./pages/account/Wishlist.tsx";
+import AccountCoins from "./pages/account/Coins.tsx";
+import AccountCropProfile from "./pages/account/CropProfile.tsx";
+import AccountNotifications from "./pages/account/Notifications.tsx";
+import AbandonedCartNudge from "./components/AbandonedCartNudge.tsx";
 
 const queryClient = new QueryClient();
 
@@ -87,8 +103,24 @@ const App = () => (
                     <Route path="/brand/:slug" element={<SEOLanding mode="brand" />} />
                     <Route path="/crop/:slug" element={<SEOLanding mode="crop" />} />
                     <Route path="/problem/:slug" element={<SEOLanding mode="problem" />} />
+                    <Route path="/loyalty" element={<Loyalty />} />
+                    <Route path="/refer" element={<Refer />} />
+                    <Route path="/quote-success" element={<QuoteSuccess />} />
+                    <Route path="/return-request" element={<ReturnRequest />} />
+                    <Route path="/seller" element={<SellerDashboard />} />
+                    <Route path="/seller/inventory" element={<SellerInventory />} />
+                    <Route path="/seller/orders" element={<SellerOrders />} />
+                    <Route path="/seller/payouts" element={<SellerPayouts />} />
+                    <Route path="/account" element={<AccountProfile />} />
+                    <Route path="/account/orders" element={<AccountOrders />} />
+                    <Route path="/account/addresses" element={<AccountAddresses />} />
+                    <Route path="/account/wishlist" element={<AccountWishlist />} />
+                    <Route path="/account/coins" element={<AccountCoins />} />
+                    <Route path="/account/crops" element={<AccountCropProfile />} />
+                    <Route path="/account/notifications" element={<AccountNotifications />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
+                  <AbandonedCartNudge />
                 </BrowserRouter>
               </TooltipProvider>
             </QueryClientProvider>
