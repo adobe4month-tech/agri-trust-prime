@@ -39,6 +39,22 @@ import Shipping from "./pages/Shipping.tsx";
 import Terms from "./pages/Terms.tsx";
 import Stores from "./pages/Stores.tsx";
 import SEOLanding from "./pages/SEOLanding.tsx";
+import Loyalty from "./pages/Loyalty.tsx";
+import Refer from "./pages/Refer.tsx";
+import QuoteSuccess from "./pages/QuoteSuccess.tsx";
+import ReturnRequest from "./pages/ReturnRequest.tsx";
+import SellerDashboard from "./pages/seller/Dashboard.tsx";
+import SellerInventory from "./pages/seller/Inventory.tsx";
+import SellerOrders from "./pages/seller/Orders.tsx";
+import SellerPayouts from "./pages/seller/Payouts.tsx";
+import AccountProfile from "./pages/account/Profile.tsx";
+import AccountOrders from "./pages/account/Orders.tsx";
+import AccountAddresses from "./pages/account/Addresses.tsx";
+import AccountWishlist from "./pages/account/Wishlist.tsx";
+import AccountCoins from "./pages/account/Coins.tsx";
+import AccountCropProfile from "./pages/account/CropProfile.tsx";
+import AccountNotifications from "./pages/account/Notifications.tsx";
+import AbandonedCartNudge from "./components/AbandonedCartNudge.tsx";
 
 const queryClient = new QueryClient();
 
