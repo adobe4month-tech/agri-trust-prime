@@ -1,107 +1,142 @@
+# KissanCares v8 — Growth, Discovery, Operations & Customer Portal
 
-
-# KissanCares v6 — Competitive Edge & Completion Plan
-
-## Competitor Analysis Summary
-
-**KissanStore.pk** has: Hot Deals carousel, product comparison built-in, Videos page (YouTube embeds), Market Rates page (crop prices), Livestock category, 2,377+ product catalog, sidebar filters on shop page, quick-view modals.
-
-**KissanMall.pk** has: Featured Category grid (Gardening Tools, Milking Machines, Dairy Fans, Oil Machines, Rain Guns, Seedling Trays, Sprayer Pumps, Digital Scales), collection-based browsing, brand-specific collection pages.
-
-**What they both lack** (our advantage): Roman Urdu localization, Guarantee Badge, Wishlist, WhatsApp checkout with preview, Seasonal Calendar, Blog/Education hub, Bulk pricing tiers, Social proof ticker, Delivery estimates.
+Per project memory: frontend-only with mock data, premium light/green aesthetic, mobile-first, EN + Roman Urdu, WhatsApp checkout. No backend / no Lovable Cloud in this phase.
 
 ---
 
-## Critical Issues Found in Current Build
+## Phase A — Conversion & Growth Optimization
 
-1. **Broken nav links** — Header/Footer category links point to `/products?category=seed` etc. but NO `/products` route exists. Users hit 404.
-2. **ShopByCrop imports non-existent assets** — `src/assets/crop-wheat.jpg` etc. likely don't exist, causing build errors or broken images.
-3. **No search functionality** — Header has a search icon but no search results page or filtering logic.
+**A1. Abandoned Cart WhatsApp Recovery**
+`src/components/AbandonedCartNudge.tsx` — if cart has items and tab is idle 90s OR user returns after >1 hr (localStorage timestamp), show bottom-right card: "Aapka cart wait kar raha hai — 5% off code: WAPSI5" with "WhatsApp pe complete karein" button (prefilled message with cart contents).
+
+**A2. Kissan Coins Loyalty Program**
+- `src/contexts/LoyaltyContext.tsx` — points in localStorage. Earn 1 coin per Rs.100, 100 coins = Rs.50 off.
+- `src/components/LoyaltyBadge.tsx` — header pill showing coin balance.
+- `src/pages/Loyalty.tsx` — "Kissan Coins" page: balance, how-to-earn, redeem tiers, history.
+- Hook into Cart/Checkout: show "Use 200 coins → Rs.100 off" toggle.
+
+**A3. Referral Program**
+`src/pages/Refer.tsx` — unique referral code (mock generated from localStorage user), share via WhatsApp/SMS, "You get Rs.200, friend gets Rs.200" copy bilingual, leaderboard of top referrers (mock).
+
+**A4. Lead Capture Funnels**
+- `src/components/ExitIntentModal.tsx` — desktop mouse-leave + mobile scroll-up-fast trigger; phone capture for "Free Crop Calendar PDF".
+- `src/components/StickyWhatsAppCapture.tsx` — slim bar above BottomNav on category pages: "Get personalized crop advice on WhatsApp →".
+
+**A5. Hero A/B Variants**
+Update `HeroSection.tsx` to randomly pick 1 of 3 headline/CTA variants per session (logged to localStorage for "winner" demo). Variants stored in `src/data/heroVariants.ts`.
 
 ---
 
-## What Gets Built
+## Phase B — Advanced Merchandising & Discovery
 
-### Phase 1: Fix Broken Things (Critical)
+**B1. Faceted Search with Autocomplete**
+- Upgrade `Header.tsx` search: dropdown with live suggestions (products, categories, crops, brands) as user types — grouped sections, keyboard nav, recent searches.
+- `src/components/SearchAutocomplete.tsx` reusable.
 
-**1. Category Pages** (`/products`) — Single route that reads `?category=` query param, filters mock products, shows grid with sort dropdown (Price Low-High, Rating, Newest). Sidebar filters: Brand, Price Range, Target Crop. This fixes ALL broken nav links across Header, Footer, ShopByCrop, ShopByProblem.
+**B2. Smart Filter Sidebar**
+Upgrade `Products.tsx` with rich facets: NPK ratio range slider, pack size multi-select, application type, crop stage, price slider, brand checklist, in-stock toggle, organic-only toggle. Active filter chips at top.
 
-**2. Search Results Page** (`/search`) — Reads `?q=` param, fuzzy-matches against product name/nameUrdu/brand/category/targetCrops. Shows result count + grid. Wired to the existing Header search input.
+**B3. Frequently Bought Together (AI bundles)**
+`src/components/FrequentlyBoughtTogether.tsx` on PDP — auto-suggest 2 complementary products based on category + targetCrops overlap. "Add all 3 to cart" with bundle discount preview.
 
-**3. Fix missing crop assets** — Replace imported image files with reliable placeholder URLs or product images from mockData.
+**B4. Voice Search (Urdu/English)**
+`src/components/VoiceSearchButton.tsx` — Web Speech API (lang=`ur-PK` toggleable to `en-US`), mic button in header, transcribed query → `/search`. Graceful fallback if unsupported.
 
-### Phase 2: Competitor-Beating New Pages (3 pages)
+**B5. Live Agronomist Chat (mock)**
+`src/components/AgronomistChat.tsx` — floating chat widget (separate from WhatsApp FAB, on PDP/Education pages only). Mock auto-replies with typing indicator; "Connect to real agronomist on WhatsApp" CTA. Online/offline status badge.
 
-**4. Market Rates Page** (`/market-rates`) — KissanStore has this, we don't. Mock data table showing current crop prices (Wheat, Rice, Cotton, Maize, Sugarcane) by city (Lahore, Multan, Faisalabad, Sargodha). Bilingual. Updated "date" shown. Farmers check this before buying inputs — massive traffic magnet and SEO goldmine.
+---
 
-**5. Videos/Tutorials Page** (`/videos`) — KissanStore has YouTube embeds. We build a grid of embedded agricultural tutorial videos (mock 6-8 YouTube IDs covering spray techniques, fertilizer application, pest identification). Bilingual titles. Category tabs: Product Demos, Crop Care, Seasonal Tips. This page keeps users on-site longer (SEO dwell time).
+## Phase C — Operations & Seller Tools
 
-**6. Dosage Calculator Page** (`/calculator`) — Neither competitor has this. Simple tool: select Product → Enter field size (acre/kanal) → Get exact dosage + water ratio. Uses data already in mockData (`dosagePerAcre`). Unique differentiator. Farmers NEED this and currently call helplines for it.
+**C1. Seller Portal Dashboard**
+`src/pages/seller/Dashboard.tsx` — protected by mock auth; shows KPIs (orders, revenue, top products), inventory table, recent orders, payouts ledger. Sub-routes:
+- `src/pages/seller/Inventory.tsx` — product list, stock edit, low-stock alerts.
+- `src/pages/seller/Orders.tsx` — order list with status filters.
+- `src/pages/seller/Payouts.tsx` — payout history + next payout date.
 
-### Phase 3: Psychology Triggers (New additions)
+Layout: `src/components/seller/SellerLayout.tsx` with sidebar nav.
 
-**7. "Sold Out" / "Coming Soon" badges** — Some products marked as out-of-stock with "Notify Me on WhatsApp" CTA. Creates scarcity + captures leads even when stock is zero.
+**C2. B2B Bulk Quote Workflow**
+Upgrade `GetQuote.tsx` into multi-step wizard: products + quantities → delivery location → company details → review → submit (WhatsApp + mock confirmation page `src/pages/QuoteSuccess.tsx` with quote ID).
 
-**8. "Verified Buyer" review badges** — Enhance review cards with green "Verified Purchase" badges. Competitors don't highlight verification.
+**C3. Delivery Tracking with Map**
+Upgrade `TrackOrder.tsx`: timeline (Confirmed → Packed → Dispatched → Out for Delivery → Delivered) with checkpoints, mock "current location" on a static map illustration (SVG of Pakistan with route line, no external maps API), ETA, courier name + WhatsApp.
 
-**9. "Bundle Deal" section on PDP** — "Yeh Saath Mein Khareedein — Save Rs.200" — show complementary product bundles (e.g., pesticide + sprayer). Neither competitor does bundling.
+**C4. Returns / RMA Workflow**
+`src/pages/ReturnRequest.tsx` — pick order → pick items → reason (dropdown bilingual) → upload photo (mock) → submit → confirmation with RMA number. Linked from Account & OrderSuccess.
 
-**10. Exit-intent / Inactivity Coupon Popup** — After 30 seconds of inactivity, show modal: "Ruko! Yeh 5% discount lo — Code: KISSAN5". Captures bouncing visitors.
+**C5. Invoice PDF Download**
+`src/components/InvoiceButton.tsx` on OrderSuccess + Account orders — generates simple HTML invoice in new tab (window.print friendly), branded header, GST line, totals. Use react-to-print pattern with plain CSS.
 
-### Phase 4: Page Polish & Completion
+---
 
-**11. Enhance Brands page** — Add brand logos (placeholder colored circles with initials), product count per brand, and "View Products" link that goes to `/products?brand=X`.
+## Phase D — Customer Portal
 
-**12. Enhance 404 page** — Add animated illustration, smarter product suggestions based on URL slug attempted.
+Expand current `Account.tsx` from single page into a real portal with sidebar.
 
-**13. Footer newsletter signup** — Email/phone capture: "Naye offers aur tips paayen" with mock subscribe toast.
+**D1. Account Layout**
+`src/components/account/AccountLayout.tsx` — left sidebar nav (mobile: top tabs), right content area. Mock-auth gated (redirect to AuthModal if no localStorage user).
 
-**14. Sticky "Add to Cart" bar on PDP mobile** — When main CTA scrolls out of view, show sticky bottom bar with price + "Cart Mein Daalein" button. KissanStore doesn't have this.
+**D2. Sub-pages**
+- `src/pages/account/Profile.tsx` — name, phone, language pref, farm size, primary crops (chips).
+- `src/pages/account/Orders.tsx` — order history with status, reorder button, view invoice, request return.
+- `src/pages/account/Addresses.tsx` — saved delivery addresses CRUD (localStorage), set default.
+- `src/pages/account/Wishlist.tsx` — replaces standalone, embedded in portal.
+- `src/pages/account/Coins.tsx` — embedded loyalty view.
+- `src/pages/account/CropProfile.tsx` — unique: select crops grown + acreage → personalized product feed + season alerts.
+- `src/pages/account/Notifications.tsx` — preferences (WhatsApp/SMS/Email toggles per category) + notification inbox (mock).
+
+**D3. Personalization Engine (frontend)**
+`src/lib/personalization.ts` — based on CropProfile + purchase history (mock localStorage), expose `getRecommendedProducts()` used on Index "Just For You" + Account dashboard.
 
 ---
 
 ## Files Summary
 
 | File | Action |
-|------|--------|
-| `src/pages/Products.tsx` | NEW — Category listing with filters & sort |
-| `src/pages/SearchResults.tsx` | NEW — Search results page |
-| `src/pages/MarketRates.tsx` | NEW — Crop price table by city |
-| `src/pages/Videos.tsx` | NEW — YouTube tutorial grid |
-| `src/pages/Calculator.tsx` | NEW — Dosage calculator tool |
-| `src/data/marketRatesData.ts` | NEW — Mock crop prices |
-| `src/data/videosData.ts` | NEW — YouTube video entries |
-| `src/components/BundleDeal.tsx` | NEW — Complementary product bundles |
-| `src/components/InactivityCoupon.tsx` | NEW — Timed discount popup |
-| `src/components/StickyPDPBar.tsx` | NEW — Mobile sticky add-to-cart |
-| `src/App.tsx` | UPDATE — 5 new routes |
-| `src/components/Header.tsx` | UPDATE — Wire search to /search, fix nav links |
-| `src/components/Footer.tsx` | UPDATE — Fix category links, add newsletter |
-| `src/components/home/ShopByCrop.tsx` | UPDATE — Fix asset imports |
-| `src/components/home/ShopByProblem.tsx` | UPDATE — Fix links to /products |
-| `src/pages/ProductDetail.tsx` | UPDATE — Bundle deal section, sticky mobile bar |
-| `src/pages/Brands.tsx` | UPDATE — Logos, product counts, View Products links |
-| `src/pages/NotFound.tsx` | UPDATE — Smarter suggestions |
-| `src/pages/Index.tsx` | UPDATE — Inactivity coupon |
-| `src/data/mockData.ts` | UPDATE — Add stockStatus field, bundle data |
-| `public/sitemap.xml` | UPDATE — New routes |
+|---|---|
+| `src/contexts/LoyaltyContext.tsx` | NEW |
+| `src/components/AbandonedCartNudge.tsx` | NEW |
+| `src/components/LoyaltyBadge.tsx` | NEW |
+| `src/components/ExitIntentModal.tsx` | NEW |
+| `src/components/StickyWhatsAppCapture.tsx` | NEW |
+| `src/components/SearchAutocomplete.tsx` | NEW |
+| `src/components/FrequentlyBoughtTogether.tsx` | NEW |
+| `src/components/VoiceSearchButton.tsx` | NEW |
+| `src/components/AgronomistChat.tsx` | NEW |
+| `src/components/InvoiceButton.tsx` | NEW |
+| `src/components/seller/SellerLayout.tsx` | NEW |
+| `src/components/account/AccountLayout.tsx` | NEW |
+| `src/pages/Loyalty.tsx` | NEW |
+| `src/pages/Refer.tsx` | NEW |
+| `src/pages/QuoteSuccess.tsx` | NEW |
+| `src/pages/ReturnRequest.tsx` | NEW |
+| `src/pages/seller/Dashboard.tsx` | NEW |
+| `src/pages/seller/Inventory.tsx` | NEW |
+| `src/pages/seller/Orders.tsx` | NEW |
+| `src/pages/seller/Payouts.tsx` | NEW |
+| `src/pages/account/Profile.tsx` | NEW |
+| `src/pages/account/Orders.tsx` | NEW |
+| `src/pages/account/Addresses.tsx` | NEW |
+| `src/pages/account/Wishlist.tsx` | NEW |
+| `src/pages/account/Coins.tsx` | NEW |
+| `src/pages/account/CropProfile.tsx` | NEW |
+| `src/pages/account/Notifications.tsx` | NEW |
+| `src/data/heroVariants.ts` | NEW |
+| `src/lib/personalization.ts` | NEW |
+| `src/App.tsx` | UPDATE — register all new routes |
+| `src/main.tsx` | UPDATE — wrap with LoyaltyProvider |
+| `src/components/Header.tsx` | UPDATE — autocomplete + voice + coins badge |
+| `src/components/home/HeroSection.tsx` | UPDATE — A/B variants |
+| `src/pages/Products.tsx` | UPDATE — smart facets |
+| `src/pages/ProductDetail.tsx` | UPDATE — FBT, agronomist chat |
+| `src/pages/Index.tsx` | UPDATE — exit intent, personalized feed |
+| `src/pages/GetQuote.tsx` | UPDATE — wizard |
+| `src/pages/TrackOrder.tsx` | UPDATE — timeline + map |
+| `src/pages/Account.tsx` | UPDATE — becomes portal shell with redirects |
+| `src/pages/OrderSuccess.tsx` | UPDATE — invoice + return links |
+| `src/contexts/CartContext.tsx` | UPDATE — abandon timestamp + coins redemption |
+| `public/sitemap.xml` | UPDATE |
 
-## Competitive Edge Summary
-
-| Feature | KissanStore | KissanMall | KissanGhar | **KissanCares (After v6)** |
-|---------|------------|------------|------------|---------------------------|
-| Category pages with filters | Yes | Yes | Yes | **Yes** |
-| Search | Yes | Yes | Yes | **Yes** |
-| Market Rates | Yes | No | No | **Yes + bilingual** |
-| Videos | Yes | No | No | **Yes + categorized** |
-| Dosage Calculator | No | No | No | **Yes — unique** |
-| Bundle Deals | No | No | No | **Yes — unique** |
-| Roman Urdu | No | No | No | **Yes — unique** |
-| Wishlist | No | No | No | **Yes** |
-| Product Comparison | Yes | No | No | **Yes** |
-| WhatsApp Checkout Preview | No | No | No | **Yes — unique** |
-| Inactivity Coupon | No | No | No | **Yes** |
-| Seasonal Calendar | No | No | No | **Yes — unique** |
-| Sticky Mobile CTA | No | No | No | **Yes** |
-| Blog/Education | No | No | Partial | **Yes — full** |
-
+Approve to execute all four phases.
