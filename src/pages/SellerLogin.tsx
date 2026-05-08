@@ -51,7 +51,7 @@ export default function SellerLogin() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <Label className="text-sm font-semibold text-foreground">Email</Label>
-                  <Input required type="email" placeholder="seller@company.com" className="mt-1.5" />
+                  <Input required type="email" placeholder="seller@company.com" value={email} onChange={e => setEmail(e.target.value)} className="mt-1.5" />
                 </div>
                 <div>
                   <Label className="text-sm font-semibold text-foreground">
