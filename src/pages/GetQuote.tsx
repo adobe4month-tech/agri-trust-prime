@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BottomNav from "@/components/BottomNav";
@@ -11,11 +12,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MessageCircle, Phone, FileText, CheckCircle2 } from "lucide-react";
+import { MessageCircle, FileText, ArrowRight, ArrowLeft, Check } from "lucide-react";
 import { toast } from "sonner";
 
 const provinces = ["Punjab", "Sindh", "KPK", "Balochistan", "AJK", "Gilgit-Baltistan"];
-
 const citiesByProvince: Record<string, string[]> = {
   Punjab: ["Lahore", "Faisalabad", "Multan", "Sargodha", "Bahawalpur", "Sahiwal", "Rahim Yar Khan", "Gujranwala", "Sialkot"],
   Sindh: ["Karachi", "Hyderabad", "Sukkur", "Larkana", "Nawabshah"],
@@ -27,142 +27,136 @@ const citiesByProvince: Record<string, string[]> = {
 
 export default function GetQuote() {
   const { language, t } = useLanguage();
-  const [formData, setFormData] = useState({
-    name: "", phone: "", type: "", province: "", city: "", products: "",
+  const navigate = useNavigate();
+  const [step, setStep] = useState(1);
+  const [data, setData] = useState({
+    products: "", quantity: "", province: "", city: "", deliveryDate: "",
+    name: "", phone: "", company: "", type: "",
   });
-  const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.name || !formData.phone || !formData.type || !formData.products) {
-      toast.error(language === "ru" ? "Tamam zaruri fields bharein" : "Please fill all required fields");
-      return;
-    }
-    setSubmitted(true);
-    toast.success(language === "ru" ? "Aapki darkhwast bhej di gayi!" : "Your quote request has been submitted!");
+  const labels = [
+    { en: "Products", ru: "Products" },
+    { en: "Delivery", ru: "Delivery" },
+    { en: "Company", ru: "Company" },
+    { en: "Review", ru: "Review" },
+  ];
+
+  const next = () => {
+    if (step === 1 && !data.products) return toast.error(t1("List products needed", "Products likhein"));
+    if (step === 2 && (!data.province || !data.city)) return toast.error(t1("Select location", "Location chunein"));
+    if (step === 3 && (!data.name || !data.phone || !data.type)) return toast.error(t1("Fill required fields", "Fields bharein"));
+    setStep(s => s + 1);
   };
+  const prev = () => setStep(s => s - 1);
+  const t1 = (en: string, ru: string) => language === "ru" ? ru : en;
 
-  const handleWhatsAppQuote = () => {
-    const msg = encodeURIComponent(
-      `Assalam o Alaikum! I need a bulk quote.\n\nName: ${formData.name}\nPhone: ${formData.phone}\nType: ${formData.type}\nLocation: ${formData.city}, ${formData.province}\n\nProducts needed:\n${formData.products}\n\nPlease share pricing.`
-    );
+  const submit = () => {
+    const msg = encodeURIComponent(`Bulk Quote Request\n\nProducts: ${data.products}\nQty: ${data.quantity}\nDelivery: ${data.city}, ${data.province}\nNeeded by: ${data.deliveryDate}\nBuyer: ${data.name} (${data.type})\nCompany: ${data.company}\nPhone: ${data.phone}`);
     window.open(`https://wa.me/923240287276?text=${msg}`, "_blank");
+    navigate("/quote-success");
   };
 
-  const availableCities = formData.province ? citiesByProvince[formData.province] || [] : [];
+  const cities = data.province ? citiesByProvince[data.province] || [] : [];
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <SEOHead title="Get Bulk Quote - Kissan Cares" description="Request bulk pricing for seeds, pesticides, herbicides & fertilizers. Dealers and farmers welcome." canonical="https://kissancares.com/get-quote" />
+      <SEOHead title="Get Bulk Quote - Kissan Cares" description="Multi-step bulk quote wizard for dealers and B2B." canonical="https://kissancares.com/get-quote" />
       <Header />
       <main className="flex-1 pb-20 lg:pb-0">
-        <Breadcrumbs items={[{ label: t("nav.home"), to: "/" }, { label: language === "ru" ? "Quote Mangwayein" : "Get Quote" }]} />
+        <Breadcrumbs items={[{ label: t("nav.home"), to: "/" }, { label: t1("Get Quote", "Quote Mangwayein") }]} />
         <div className="container py-8 max-w-2xl">
-          <div className="text-center mb-8">
-            <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-              <FileText className="h-7 w-7 text-primary" />
-            </div>
-            <h1 className="text-2xl md:text-3xl font-extrabold text-foreground mb-2">
-              {language === "ru" ? "Bulk / Dealer Quote Mangwayein" : "Request Bulk / Dealer Quote"}
-            </h1>
-            <p className="text-sm text-muted-foreground max-w-md mx-auto">
-              {language === "ru"
-                ? "Zyada miqdar mein khareedna chahte hain? Form bharein ya seedha WhatsApp karein."
-                : "Want to buy in bulk? Fill the form or contact us directly on WhatsApp."}
-            </p>
+          <div className="text-center mb-6">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-3"><FileText className="h-6 w-6 text-primary" /></div>
+            <h1 className="text-2xl md:text-3xl font-extrabold text-foreground">{t1("Bulk / Dealer Quote", "Bulk / Dealer Quote")}</h1>
           </div>
 
-          {submitted ? (
-            <div className="premium-card p-8 text-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-                <CheckCircle2 className="h-8 w-8 text-primary" />
-              </div>
-              <h2 className="text-xl font-extrabold text-foreground">
-                {language === "ru" ? "Shukriya! Darkhwast Mil Gayi" : "Thank You! Request Received"}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {language === "ru"
-                  ? "Hamari team 24 ghanton mein aap se rabta karegi. Ya abhi WhatsApp par baat karein."
-                  : "Our team will contact you within 24 hours. Or chat with us on WhatsApp now."}
-              </p>
-              <Button variant="whatsapp" onClick={handleWhatsAppQuote}>
-                <MessageCircle className="h-4 w-4" /> WhatsApp Par Baat Karein
-              </Button>
+          {/* Stepper */}
+          <div className="flex items-center justify-between mb-6 max-w-md mx-auto">
+            {labels.map((l, i) => {
+              const idx = i + 1;
+              const done = idx < step;
+              const active = idx === step;
+              return (
+                <div key={i} className="flex items-center flex-1 last:flex-none">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-extrabold ${done ? "bg-primary text-primary-foreground" : active ? "bg-primary/10 text-primary border-2 border-primary" : "bg-secondary text-muted-foreground"}`}>{done ? <Check className="h-4 w-4" /> : idx}</div>
+                  {i < labels.length - 1 && <div className={`flex-1 h-0.5 mx-1 ${done ? "bg-primary" : "bg-border"}`} />}
+                </div>
+              );
+            })}
+          </div>
+
+          <form onSubmit={e => e.preventDefault()} className="premium-card p-6 space-y-4">
+            {step === 1 && (
+              <>
+                <h2 className="font-extrabold text-lg">{t1("Step 1: Products & Quantities", "Qadam 1: Products aur Miqdar")}</h2>
+                <div className="space-y-2"><Label>{t1("Products needed *", "Products *")}</Label><Textarea rows={4} placeholder={t1("List product names...", "Products ke naam likhein...")} value={data.products} onChange={e => setData({ ...data, products: e.target.value })} maxLength={1000} /></div>
+                <div className="space-y-2"><Label>{t1("Approx Total Quantity", "Andazan Miqdar")}</Label><Input placeholder="e.g. 500 bottles, 200kg" value={data.quantity} onChange={e => setData({ ...data, quantity: e.target.value })} /></div>
+              </>
+            )}
+            {step === 2 && (
+              <>
+                <h2 className="font-extrabold text-lg">{t1("Step 2: Delivery Location", "Qadam 2: Delivery Jagah")}</h2>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <div className="space-y-2"><Label>{t1("Province *", "Sooba *")}</Label>
+                    <Select value={data.province} onValueChange={v => setData({ ...data, province: v, city: "" })}>
+                      <SelectTrigger><SelectValue placeholder={t1("Select", "Chunein")} /></SelectTrigger>
+                      <SelectContent>{provinces.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2"><Label>{t1("City *", "Shehar *")}</Label>
+                    <Select value={data.city} onValueChange={v => setData({ ...data, city: v })} disabled={!data.province}>
+                      <SelectTrigger><SelectValue placeholder={t1("Select", "Chunein")} /></SelectTrigger>
+                      <SelectContent>{cities.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="space-y-2"><Label>{t1("Needed By", "Kab Tak Chahiye")}</Label><Input type="date" value={data.deliveryDate} onChange={e => setData({ ...data, deliveryDate: e.target.value })} /></div>
+              </>
+            )}
+            {step === 3 && (
+              <>
+                <h2 className="font-extrabold text-lg">{t1("Step 3: Company / Buyer Details", "Qadam 3: Company / Khareedar Tafseel")}</h2>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <div className="space-y-2"><Label>{t1("Name *", "Naam *")}</Label><Input value={data.name} onChange={e => setData({ ...data, name: e.target.value })} maxLength={100} /></div>
+                  <div className="space-y-2"><Label>{t1("Phone *", "Phone *")}</Label><Input type="tel" value={data.phone} onChange={e => setData({ ...data, phone: e.target.value })} maxLength={15} /></div>
+                </div>
+                <div className="space-y-2"><Label>{t1("You Are *", "Aap *")}</Label>
+                  <Select value={data.type} onValueChange={v => setData({ ...data, type: v })}>
+                    <SelectTrigger><SelectValue placeholder={t1("Select", "Chunein")} /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="farmer">{t1("Farmer", "Kissan")}</SelectItem>
+                      <SelectItem value="dealer">{t1("Dealer", "Dealer")}</SelectItem>
+                      <SelectItem value="corporate">{t1("Corporate", "Corporate")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2"><Label>{t1("Company Name", "Company Naam")}</Label><Input value={data.company} onChange={e => setData({ ...data, company: e.target.value })} maxLength={100} /></div>
+              </>
+            )}
+            {step === 4 && (
+              <>
+                <h2 className="font-extrabold text-lg">{t1("Step 4: Review & Submit", "Qadam 4: Dekhein aur Bhejein")}</h2>
+                <div className="space-y-2 text-sm bg-secondary/40 rounded-xl p-4">
+                  <Row label={t1("Products", "Products")} value={data.products} />
+                  <Row label={t1("Quantity", "Miqdar")} value={data.quantity || "—"} />
+                  <Row label={t1("Delivery", "Delivery")} value={`${data.city}, ${data.province}`} />
+                  <Row label={t1("Needed By", "Kab")} value={data.deliveryDate || "—"} />
+                  <Row label={t1("Buyer", "Khareedar")} value={`${data.name} (${data.type})`} />
+                  <Row label={t1("Company", "Company")} value={data.company || "—"} />
+                  <Row label={t1("Phone", "Phone")} value={data.phone} />
+                </div>
+              </>
+            )}
+
+            <div className="flex gap-2 pt-2">
+              {step > 1 && <Button type="button" variant="outline" onClick={prev}><ArrowLeft className="h-4 w-4" />{t1("Back", "Wapas")}</Button>}
+              {step < 4 ? (
+                <Button type="button" variant="hero" onClick={next} className="ml-auto">{t1("Next", "Aage")}<ArrowRight className="h-4 w-4" /></Button>
+              ) : (
+                <Button type="button" variant="whatsapp" onClick={submit} className="ml-auto"><MessageCircle className="h-4 w-4" />{t1("Submit & Send to WhatsApp", "Bhejein")}</Button>
+              )}
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="premium-card p-6 space-y-5">
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">{language === "ru" ? "Naam *" : "Name *"}</Label>
-                  <Input id="name" placeholder={language === "ru" ? "Aapka poora naam" : "Your full name"} value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} maxLength={100} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">{language === "ru" ? "Phone Number *" : "Phone Number *"}</Label>
-                  <Input id="phone" type="tel" placeholder="03XX-XXXXXXX" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} maxLength={15} />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label>{language === "ru" ? "Aap Kaun Hain? *" : "You Are? *"}</Label>
-                <Select value={formData.type} onValueChange={v => setFormData({ ...formData, type: v })}>
-                  <SelectTrigger><SelectValue placeholder={language === "ru" ? "Chunein..." : "Select..."} /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="farmer">{language === "ru" ? "Kissan (Farmer)" : "Farmer"}</SelectItem>
-                    <SelectItem value="dealer">{language === "ru" ? "Dealer / Dukandaar" : "Dealer / Retailer"}</SelectItem>
-                    <SelectItem value="corporate">{language === "ru" ? "Corporate / Company" : "Corporate / Company"}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>{language === "ru" ? "Sooba" : "Province"}</Label>
-                  <Select value={formData.province} onValueChange={v => setFormData({ ...formData, province: v, city: "" })}>
-                    <SelectTrigger><SelectValue placeholder={language === "ru" ? "Sooba chunein" : "Select province"} /></SelectTrigger>
-                    <SelectContent>
-                      {provinces.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>{language === "ru" ? "Shehar" : "City"}</Label>
-                  <Select value={formData.city} onValueChange={v => setFormData({ ...formData, city: v })} disabled={!formData.province}>
-                    <SelectTrigger><SelectValue placeholder={language === "ru" ? "Shehar chunein" : "Select city"} /></SelectTrigger>
-                    <SelectContent>
-                      {availableCities.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="products">{language === "ru" ? "Kaunse Products Chahiye? *" : "Which Products Do You Need? *"}</Label>
-                <Textarea
-                  id="products"
-                  placeholder={language === "ru" ? "Product ka naam, miqdar aur zarurat likhein..." : "Describe the products, quantities and requirements..."}
-                  value={formData.products}
-                  onChange={e => setFormData({ ...formData, products: e.target.value })}
-                  rows={4}
-                  maxLength={1000}
-                />
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <Button type="submit" variant="hero" size="lg" className="flex-1">
-                  <FileText className="h-4 w-4" /> {language === "ru" ? "Quote Bhejein" : "Submit Quote Request"}
-                </Button>
-                <Button type="button" variant="whatsapp" size="lg" className="flex-1" onClick={handleWhatsAppQuote}>
-                  <MessageCircle className="h-4 w-4" /> {language === "ru" ? "WhatsApp Par Poochein" : "Ask on WhatsApp"}
-                </Button>
-              </div>
-
-              <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
-                <Phone className="h-3.5 w-3.5" />
-                {language === "ru" ? "Ya seedha call karein: " : "Or call directly: "}
-                <a href="tel:+923240287276" className="text-primary font-semibold hover:underline">0324-028-7276</a>
-              </div>
-            </form>
-          )}
+          </form>
         </div>
       </main>
       <Footer />
@@ -170,4 +164,8 @@ export default function GetQuote() {
       <BottomNav />
     </div>
   );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return <div className="flex justify-between gap-3"><span className="text-muted-foreground shrink-0">{label}</span><span className="font-semibold text-right break-words">{value}</span></div>;
 }
