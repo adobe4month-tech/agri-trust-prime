@@ -1,16 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, ShieldCheck, Truck, Banknote } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { pickHeroVariant } from "@/data/heroVariants";
 import heroImg from "@/assets/hero-farm.jpg";
 
 export default function HeroSection() {
   const [active, setActive] = useState(0);
   const { t, language } = useLanguage();
+  const variant = useMemo(() => pickHeroVariant(), []);
 
   const slides = [
-    { title: t("hero.slide1.title"), titleAccent: t("hero.slide1.accent"), subtitle: t("hero.slide1.subtitle"), cta: t("hero.slide1.cta"), ctaLink: "/products?sale=true" },
+    { title: variant.headline[language === "ru" ? "ru" : "en"], titleAccent: "", subtitle: variant.sub[language === "ru" ? "ru" : "en"], cta: variant.cta[language === "ru" ? "ru" : "en"], ctaLink: "/products?sale=true" },
     { title: t("hero.slide2.title"), titleAccent: t("hero.slide2.accent"), subtitle: t("hero.slide2.subtitle"), cta: t("hero.slide2.cta"), ctaLink: "/products" },
     { title: t("hero.slide3.title"), titleAccent: t("hero.slide3.accent"), subtitle: t("hero.slide3.subtitle"), cta: t("hero.slide3.cta"), ctaLink: "/products" },
   ];
