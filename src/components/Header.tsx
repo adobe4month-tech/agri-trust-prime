@@ -137,6 +137,7 @@ export default function Header() {
 
           {/* Actions */}
           <div className="flex items-center gap-1 ml-auto">
+            <LoyaltyBadge />
             <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSearchOpen(!searchOpen)}>
               <Search className="h-5 w-5" />
             </Button>
