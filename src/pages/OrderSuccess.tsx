@@ -5,7 +5,8 @@ import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { CheckCircle2, MessageCircle, Truck } from "lucide-react";
+import { CheckCircle2, MessageCircle, Truck, Undo2 } from "lucide-react";
+import InvoiceButton from "@/components/InvoiceButton";
 
 export default function OrderSuccess() {
   const { language } = useLanguage();
