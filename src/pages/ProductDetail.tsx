@@ -18,6 +18,8 @@ import PhotoReviews from "@/components/PhotoReviews";
 import ProductQA from "@/components/ProductQA";
 import ProductVariants from "@/components/ProductVariants";
 import CertificatesSection from "@/components/CertificatesSection";
+import FrequentlyBoughtTogether from "@/components/FrequentlyBoughtTogether";
+import AgronomistChat from "@/components/AgronomistChat";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { Button } from "@/components/ui/button";
