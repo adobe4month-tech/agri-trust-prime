@@ -94,7 +94,6 @@ const App = () => (
                     <Route path="/order-success" element={<OrderSuccess />} />
                     <Route path="/wishlist" element={<Wishlist />} />
                     <Route path="/compare" element={<Compare />} />
-                    <Route path="/account" element={<Account />} />
                     <Route path="/returns" element={<Returns />} />
                     <Route path="/shipping" element={<Shipping />} />
                     <Route path="/terms" element={<Terms />} />
