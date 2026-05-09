@@ -9,6 +9,8 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import CartDrawer from "@/components/CartDrawer";
 import AuthModal from "@/components/AuthModal";
+import SearchAutocomplete from "@/components/SearchAutocomplete";
+import LoyaltyBadge from "@/components/LoyaltyBadge";
 
 export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
