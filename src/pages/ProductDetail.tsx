@@ -435,7 +435,7 @@ export default function ProductDetailPage() {
 
           {/* Frequently Bought Together */}
           <div className="mt-12">
-            <FrequentlyBoughtTogether currentProduct={product} />
+            <FrequentlyBoughtTogether product={product} />
           </div>
 
           {/* Related Products */}
