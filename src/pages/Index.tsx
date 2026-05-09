@@ -192,6 +192,7 @@ const Index = () => {
       <SocialProofTicker />
       <BottomNav />
       <InactivityCoupon />
+      <ExitIntentModal />
     </div>
   );
 };
