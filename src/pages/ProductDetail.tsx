@@ -457,6 +457,7 @@ export default function ProductDetailPage() {
       <Footer />
       <WhatsAppFAB />
       <BottomNav />
+      <AgronomistChat />
     </div>
   );
 }
