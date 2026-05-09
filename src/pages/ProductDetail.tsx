@@ -433,6 +433,11 @@ export default function ProductDetailPage() {
             </div>
           )}
 
+          {/* Frequently Bought Together */}
+          <div className="mt-12">
+            <FrequentlyBoughtTogether currentProduct={product} />
+          </div>
+
           {/* Related Products */}
           {relatedProducts.length > 0 && (
             <div className="mt-12 mb-12">
