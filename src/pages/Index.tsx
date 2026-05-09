@@ -131,7 +131,7 @@ function WishlistSection() {
 
 function JustForYou() {
   const { language } = useLanguage();
-  const picks = products.slice(0, 4);
+  const picks = getRecommendedProducts(4);
 
   return (
     <section className="py-8">
