@@ -14,10 +14,12 @@ import SocialProofTicker from "@/components/SocialProofTicker";
 import SeasonalCalendar from "@/components/home/SeasonalCalendar";
 import SEOHead from "@/components/SEOHead";
 import InactivityCoupon from "@/components/InactivityCoupon";
+import ExitIntentModal from "@/components/ExitIntentModal";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { products } from "@/data/mockData";
+import { getRecommendedProducts } from "@/lib/personalization";
 import ProductCard from "@/components/ProductCard";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -129,7 +131,7 @@ function WishlistSection() {
 
 function JustForYou() {
   const { language } = useLanguage();
-  const picks = products.slice(0, 4);
+  const picks = getRecommendedProducts(4);
 
   return (
     <section className="py-8">
@@ -190,6 +192,7 @@ const Index = () => {
       <SocialProofTicker />
       <BottomNav />
       <InactivityCoupon />
+      <ExitIntentModal />
     </div>
   );
 };

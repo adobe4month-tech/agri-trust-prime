@@ -9,6 +9,8 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import CartDrawer from "@/components/CartDrawer";
 import AuthModal from "@/components/AuthModal";
+import SearchAutocomplete from "@/components/SearchAutocomplete";
+import LoyaltyBadge from "@/components/LoyaltyBadge";
 
 export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -129,20 +131,13 @@ export default function Header() {
           </Link>
 
           {/* Search */}
-          <form className="flex-1 max-w-xl mx-auto hidden md:block" onSubmit={e => { e.preventDefault(); if (searchQuery.trim()) navigate(`/search?q=${encodeURIComponent(searchQuery)}`); }}>
-            <div className="relative group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
-              <Input
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder={language === "ru" ? "Beej, dawa, khaad talaash karein..." : "Search seeds, pesticides, fertilizers..."}
-                className="pl-11 h-11 bg-secondary/60 border border-border rounded-xl text-sm focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:bg-card transition-all"
-              />
-            </div>
-          </form>
+          <div className="flex-1 max-w-xl mx-auto hidden md:block">
+            <SearchAutocomplete />
+          </div>
 
           {/* Actions */}
           <div className="flex items-center gap-1 ml-auto">
+            <LoyaltyBadge />
             <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSearchOpen(!searchOpen)}>
               <Search className="h-5 w-5" />
             </Button>

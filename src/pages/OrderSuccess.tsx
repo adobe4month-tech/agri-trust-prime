@@ -5,7 +5,8 @@ import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { CheckCircle2, MessageCircle, Truck } from "lucide-react";
+import { CheckCircle2, MessageCircle, Truck, Undo2 } from "lucide-react";
+import InvoiceButton from "@/components/InvoiceButton";
 
 export default function OrderSuccess() {
   const { language } = useLanguage();
@@ -38,8 +39,20 @@ export default function OrderSuccess() {
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center flex-wrap">
           <Button asChild variant="hero"><a href="https://wa.me/923240287276" target="_blank" rel="noreferrer"><MessageCircle className="h-4 w-4" />{t("Chat on WhatsApp", "WhatsApp Par Baat")}</a></Button>
+          {order && (
+            <InvoiceButton data={{
+              orderId: order.orderId,
+              date: new Date().toLocaleDateString(),
+              buyer: { name: order.form?.name || "Customer", phone: order.form?.phone || "", address: order.form?.address || "", city: order.form?.city || "" },
+              items: (order.items || []).map((i: any) => ({ name: i.name || i.product?.name || "Item", qty: i.quantity || 1, price: i.price || i.product?.price || 0 })),
+              subtotal: order.subtotal || order.totalPrice,
+              shipping: order.shipping || 0,
+              total: order.totalPrice,
+            }} />
+          )}
+          <Button asChild variant="outline"><Link to="/return-request"><Undo2 className="h-4 w-4" />{t("Request Return", "Wapsi Karein")}</Link></Button>
           <Button asChild variant="outline"><Link to="/">{t("Back to Home", "Wapis Home")}</Link></Button>
         </div>
       </main>
