@@ -105,7 +105,7 @@ export const OrderApi = {
         { at: new Date(Date.now() - 2 * 864e5).toISOString(), status: "processing" as OrderStatus, city: "Lahore" },
         { at: new Date(Date.now() - 1 * 864e5).toISOString(), status: "shipped" as OrderStatus, city: "Multan" },
       ];
-      return { orderId: id, current: "shipped", etaDays: 1, events };
+      return { orderId: id, current: "shipped" as OrderStatus, etaDays: 1, events };
     }),
   invoiceUrl: (id: string) => `${import.meta.env.VITE_API_BASE_URL || ""}/orders/${id}/invoice.pdf`,
 };
