@@ -1,142 +1,144 @@
-# KissanCares v8 — Growth, Discovery, Operations & Customer Portal
+# Full Plan — Demo Accounts + Buyer/Seller/Admin Portals + PHP Backend Scaffold
 
-Per project memory: frontend-only with mock data, premium light/green aesthetic, mobile-first, EN + Roman Urdu, WhatsApp checkout. No backend / no Lovable Cloud in this phase.
+## Can I build the PHP backend?
 
----
+**Short answer:** I can write the full PHP backend **as code** (controllers, routes, models, SQL schema, `.htaccess`, composer setup) inside a `/backend` folder in this repo, and I can match it **1:1** to the API contract the frontend already expects. What this Lovable sandbox **cannot** do is *run* PHP — it only serves the React/Vite app. So you'd take the `/backend` folder, drop it on your PHP host (cPanel / VPS / Laravel Forge / XAMPP), point `VITE_API_BASE_URL` at it, and you're live.
 
-## Phase A — Conversion & Growth Optimization
+Two flavors I can scaffold — pick one in the questions after this plan:
+- **Vanilla PHP 8 + PDO** (single-folder, no framework, easiest to deploy on shared hosting)
+- **Laravel 11** (proper migrations, Eloquent, Sanctum auth, queues — better long-term)
 
-**A1. Abandoned Cart WhatsApp Recovery**
-`src/components/AbandonedCartNudge.tsx` — if cart has items and tab is idle 90s OR user returns after >1 hr (localStorage timestamp), show bottom-right card: "Aapka cart wait kar raha hai — 5% off code: WAPSI5" with "WhatsApp pe complete karein" button (prefilled message with cart contents).
-
-**A2. Kissan Coins Loyalty Program**
-- `src/contexts/LoyaltyContext.tsx` — points in localStorage. Earn 1 coin per Rs.100, 100 coins = Rs.50 off.
-- `src/components/LoyaltyBadge.tsx` — header pill showing coin balance.
-- `src/pages/Loyalty.tsx` — "Kissan Coins" page: balance, how-to-earn, redeem tiers, history.
-- Hook into Cart/Checkout: show "Use 200 coins → Rs.100 off" toggle.
-
-**A3. Referral Program**
-`src/pages/Refer.tsx` — unique referral code (mock generated from localStorage user), share via WhatsApp/SMS, "You get Rs.200, friend gets Rs.200" copy bilingual, leaderboard of top referrers (mock).
-
-**A4. Lead Capture Funnels**
-- `src/components/ExitIntentModal.tsx` — desktop mouse-leave + mobile scroll-up-fast trigger; phone capture for "Free Crop Calendar PDF".
-- `src/components/StickyWhatsAppCapture.tsx` — slim bar above BottomNav on category pages: "Get personalized crop advice on WhatsApp →".
-
-**A5. Hero A/B Variants**
-Update `HeroSection.tsx` to randomly pick 1 of 3 headline/CTA variants per session (logged to localStorage for "winner" demo). Variants stored in `src/data/heroVariants.ts`.
+Everything below is the same regardless of choice.
 
 ---
 
-## Phase B — Advanced Merchandising & Discovery
+## Part 1 — Demo accounts (so you can preview both portals NOW)
 
-**B1. Faceted Search with Autocomplete**
-- Upgrade `Header.tsx` search: dropdown with live suggestions (products, categories, crops, brands) as user types — grouped sections, keyboard nav, recent searches.
-- `src/components/SearchAutocomplete.tsx` reusable.
+Demo credentials seeded into a frontend mock-auth layer (works without backend, auto-disables when `VITE_API_BASE_URL` is set):
 
-**B2. Smart Filter Sidebar**
-Upgrade `Products.tsx` with rich facets: NPK ratio range slider, pack size multi-select, application type, crop stage, price slider, brand checklist, in-stock toggle, organic-only toggle. Active filter chips at top.
+| Role   | Email             | Password    | Lands on   |
+|--------|-------------------|-------------|------------|
+| Buyer  | `user@test.com`   | `user123`   | `/account` |
+| Seller | `seller@test.com` | `seller123` | `/seller`  |
+| Admin  | `admin@test.com`  | `admin123`  | `/admin`   |
 
-**B3. Frequently Bought Together (AI bundles)**
-`src/components/FrequentlyBoughtTogether.tsx` on PDP — auto-suggest 2 complementary products based on category + targetCrops overlap. "Add all 3 to cart" with bundle discount preview.
+Login screens show a hint box with these credentials.
 
-**B4. Voice Search (Urdu/English)**
-`src/components/VoiceSearchButton.tsx` — Web Speech API (lang=`ur-PK` toggleable to `en-US`), mic button in header, transcribed query → `/search`. Graceful fallback if unsupported.
-
-**B5. Live Agronomist Chat (mock)**
-`src/components/AgronomistChat.tsx` — floating chat widget (separate from WhatsApp FAB, on PDP/Education pages only). Mock auto-replies with typing indicator; "Connect to real agronomist on WhatsApp" CTA. Online/offline status badge.
-
----
-
-## Phase C — Operations & Seller Tools
-
-**C1. Seller Portal Dashboard**
-`src/pages/seller/Dashboard.tsx` — protected by mock auth; shows KPIs (orders, revenue, top products), inventory table, recent orders, payouts ledger. Sub-routes:
-- `src/pages/seller/Inventory.tsx` — product list, stock edit, low-stock alerts.
-- `src/pages/seller/Orders.tsx` — order list with status filters.
-- `src/pages/seller/Payouts.tsx` — payout history + next payout date.
-
-Layout: `src/components/seller/SellerLayout.tsx` with sidebar nav.
-
-**C2. B2B Bulk Quote Workflow**
-Upgrade `GetQuote.tsx` into multi-step wizard: products + quantities → delivery location → company details → review → submit (WhatsApp + mock confirmation page `src/pages/QuoteSuccess.tsx` with quote ID).
-
-**C3. Delivery Tracking with Map**
-Upgrade `TrackOrder.tsx`: timeline (Confirmed → Packed → Dispatched → Out for Delivery → Delivered) with checkpoints, mock "current location" on a static map illustration (SVG of Pakistan with route line, no external maps API), ETA, courier name + WhatsApp.
-
-**C4. Returns / RMA Workflow**
-`src/pages/ReturnRequest.tsx` — pick order → pick items → reason (dropdown bilingual) → upload photo (mock) → submit → confirmation with RMA number. Linked from Account & OrderSuccess.
-
-**C5. Invoice PDF Download**
-`src/components/InvoiceButton.tsx` on OrderSuccess + Account orders — generates simple HTML invoice in new tab (window.print friendly), branded header, GST line, totals. Use react-to-print pattern with plain CSS.
+### Frontend changes
+- `src/lib/api/mockAuth.ts` (new) — three seeded accounts, `login/logout/getSession`, stores `kc-auth-token` + `kc-auth-user`.
+- `AuthApi.login/logout/me` in `endpoints.ts` switched to `withMock(realPhpCall, mockCall)`.
+- `AuthModal.tsx` → replace broken OTP with email + password, demo-hint box, redirect by role.
+- `SellerLogin.tsx` → add password field, wire to `AuthApi.login`, redirect by role.
+- New `/login` and `/admin-login` routes (reuse modal component as full pages).
+- `AccountLayout`, `SellerLayout`, new `AdminLayout` → use `useSession()` instead of localStorage flags; logout buttons call `AuthApi.logout`.
+- `App.tsx` → wrap `/account/*` in `<ProtectedRoute role="customer">`, `/seller/*` in `role="seller"`, `/admin/*` in `role="admin"`.
+- Fix `LoyaltyProvider` placement (move inside `QueryClientProvider` in `main.tsx`).
 
 ---
 
-## Phase D — Customer Portal
+## Part 2 — Admin Panel (new, frontend-only, backend-ready)
 
-Expand current `Account.tsx` from single page into a real portal with sidebar.
+Layout: left sidebar + topbar, same premium light/green tokens as the rest of the site.
 
-**D1. Account Layout**
-`src/components/account/AccountLayout.tsx` — left sidebar nav (mobile: top tabs), right content area. Mock-auth gated (redirect to AuthModal if no localStorage user).
+### Pages under `/admin`
+1. **Dashboard** (`/admin`) — KPIs: revenue today/7d/30d, orders, new users, top SKUs, low-stock alerts, pending seller applications. Uses `useAdminKpis()` hook.
+2. **Orders** (`/admin/orders`) — table with filter by status/date/seller, drawer for order detail, status override, refund trigger.
+3. **Products** (`/admin/products`) — list, search, create/edit form (name, slug, price, MRP, stock, category, crop, images, variants), bulk import CSV stub.
+4. **Categories & Crops** (`/admin/taxonomy`) — CRUD for categories, crops, problem-tags.
+5. **Sellers** (`/admin/sellers`) — list, approve/reject applications, view payouts, suspend.
+6. **Customers** (`/admin/customers`) — list, search by phone/email, view orders, adjust coins, block user.
+7. **Coupons** (`/admin/coupons`) — CRUD: code, type (%/flat), min cart, usage cap, valid window.
+8. **Loyalty / Coins** (`/admin/loyalty`) — earn rate, redemption rules, manual coin grants.
+9. **Content** (`/admin/content`) — blog posts, education videos, market rates, hero banners, A/B variants.
+10. **Reviews & Q&A** (`/admin/reviews`) — moderate, approve, hide, reply.
+11. **Leads** (`/admin/leads`) — Get-Quote, Contact, exit-intent captures, agronomist chat threads.
+12. **Notifications** (`/admin/notifications`) — broadcast push/SMS/WhatsApp blast composer.
+13. **Settings** (`/admin/settings`) — site info, payment toggles, shipping rules, tax, WhatsApp number, SEO defaults.
+14. **Audit log** (`/admin/audit`) — who did what when.
 
-**D2. Sub-pages**
-- `src/pages/account/Profile.tsx` — name, phone, language pref, farm size, primary crops (chips).
-- `src/pages/account/Orders.tsx` — order history with status, reorder button, view invoice, request return.
-- `src/pages/account/Addresses.tsx` — saved delivery addresses CRUD (localStorage), set default.
-- `src/pages/account/Wishlist.tsx` — replaces standalone, embedded in portal.
-- `src/pages/account/Coins.tsx` — embedded loyalty view.
-- `src/pages/account/CropProfile.tsx` — unique: select crops grown + acreage → personalized product feed + season alerts.
-- `src/pages/account/Notifications.tsx` — preferences (WhatsApp/SMS/Email toggles per category) + notification inbox (mock).
-
-**D3. Personalization Engine (frontend)**
-`src/lib/personalization.ts` — based on CropProfile + purchase history (mock localStorage), expose `getRecommendedProducts()` used on Index "Just For You" + Account dashboard.
+### Frontend deliverables
+- `src/components/admin/AdminLayout.tsx` (sidebar + topbar + role guard).
+- `src/pages/admin/*` — one file per page above, fully built with shadcn `Table`, `Dialog`, `Form`, skeletons, empty states, error states.
+- `src/hooks/api.ts` — add `useAdminKpis`, `useAdminOrders`, `useAdminProducts`, `useAdminSellers`, `useAdminCustomers`, `useCoupons`, `useContentItems`, `useLeads`, etc.
+- `src/lib/api/endpoints.ts` — add `AdminApi.*` block, all wired through `withMock(...)` so the panel is fully clickable with seed data today and live tomorrow.
+- Mock seed data in `src/lib/api/mockAdminData.ts`.
 
 ---
 
-## Files Summary
+## Part 3 — PHP Backend Scaffold (in `/backend` folder of this repo)
 
-| File | Action |
-|---|---|
-| `src/contexts/LoyaltyContext.tsx` | NEW |
-| `src/components/AbandonedCartNudge.tsx` | NEW |
-| `src/components/LoyaltyBadge.tsx` | NEW |
-| `src/components/ExitIntentModal.tsx` | NEW |
-| `src/components/StickyWhatsAppCapture.tsx` | NEW |
-| `src/components/SearchAutocomplete.tsx` | NEW |
-| `src/components/FrequentlyBoughtTogether.tsx` | NEW |
-| `src/components/VoiceSearchButton.tsx` | NEW |
-| `src/components/AgronomistChat.tsx` | NEW |
-| `src/components/InvoiceButton.tsx` | NEW |
-| `src/components/seller/SellerLayout.tsx` | NEW |
-| `src/components/account/AccountLayout.tsx` | NEW |
-| `src/pages/Loyalty.tsx` | NEW |
-| `src/pages/Refer.tsx` | NEW |
-| `src/pages/QuoteSuccess.tsx` | NEW |
-| `src/pages/ReturnRequest.tsx` | NEW |
-| `src/pages/seller/Dashboard.tsx` | NEW |
-| `src/pages/seller/Inventory.tsx` | NEW |
-| `src/pages/seller/Orders.tsx` | NEW |
-| `src/pages/seller/Payouts.tsx` | NEW |
-| `src/pages/account/Profile.tsx` | NEW |
-| `src/pages/account/Orders.tsx` | NEW |
-| `src/pages/account/Addresses.tsx` | NEW |
-| `src/pages/account/Wishlist.tsx` | NEW |
-| `src/pages/account/Coins.tsx` | NEW |
-| `src/pages/account/CropProfile.tsx` | NEW |
-| `src/pages/account/Notifications.tsx` | NEW |
-| `src/data/heroVariants.ts` | NEW |
-| `src/lib/personalization.ts` | NEW |
-| `src/App.tsx` | UPDATE — register all new routes |
-| `src/main.tsx` | UPDATE — wrap with LoyaltyProvider |
-| `src/components/Header.tsx` | UPDATE — autocomplete + voice + coins badge |
-| `src/components/home/HeroSection.tsx` | UPDATE — A/B variants |
-| `src/pages/Products.tsx` | UPDATE — smart facets |
-| `src/pages/ProductDetail.tsx` | UPDATE — FBT, agronomist chat |
-| `src/pages/Index.tsx` | UPDATE — exit intent, personalized feed |
-| `src/pages/GetQuote.tsx` | UPDATE — wizard |
-| `src/pages/TrackOrder.tsx` | UPDATE — timeline + map |
-| `src/pages/Account.tsx` | UPDATE — becomes portal shell with redirects |
-| `src/pages/OrderSuccess.tsx` | UPDATE — invoice + return links |
-| `src/contexts/CartContext.tsx` | UPDATE — abandon timestamp + coins redemption |
-| `public/sitemap.xml` | UPDATE |
+> Generated as static files. Does not run inside Lovable. You deploy it to your PHP host.
 
-Approve to execute all four phases.
+### Vanilla PHP 8 + PDO option (default unless you pick Laravel)
+```text
+backend/
+├── public/
+│   ├── index.php           # front controller, routes API requests
+│   └── .htaccess           # rewrite all /api/* → index.php, CORS
+├── src/
+│   ├── Router.php
+│   ├── Db.php              # PDO singleton, reads .env
+│   ├── Auth.php            # JWT issue/verify (firebase/php-jwt)
+│   ├── Middleware/
+│   │   ├── AuthMiddleware.php
+│   │   └── RoleMiddleware.php
+│   └── Controllers/
+│       ├── AuthController.php
+│       ├── ProductController.php
+│       ├── CartController.php
+│       ├── OrderController.php
+│       ├── SellerController.php
+│       ├── AdminController.php
+│       ├── ReviewController.php
+│       ├── CouponController.php
+│       └── ... (one per AdminApi/SellerApi/etc.)
+├── sql/
+│   ├── schema.sql          # users, roles, products, categories, crops,
+│   │                       # orders, order_items, addresses, cart,
+│   │                       # wishlist, reviews, qa, coupons, coins,
+│   │                       # loyalty_ledger, referrals, sellers,
+│   │                       # seller_payouts, leads, content_*, audit_log
+│   └── seed.sql            # demo user/seller/admin + sample products
+├── composer.json           # firebase/php-jwt, vlucas/phpdotenv
+├── .env.example            # DB_HOST, DB_NAME, JWT_SECRET, WHATSAPP_NUMBER
+└── README.md               # deployment steps for cPanel + VPS + XAMPP
+```
+
+### Laravel 11 option (if picked)
+- `php artisan`-ready project under `/backend`, with migrations for every table, Sanctum personal-access-token auth, policies for role checks, resource controllers, OpenAPI doc, queue stubs for SMS/WhatsApp.
+
+### Endpoint coverage (matches `API.md` you already have, **plus** admin)
+- `POST /auth/login`, `POST /auth/logout`, `GET /auth/me`, `POST /auth/send-otp`, `POST /auth/verify-otp`
+- Buyer: `/me/profile`, `/me/addresses`, `/me/orders`, `/me/wishlist`, `/me/coins`, `/me/notifications`, `/cart`, `/cart/quote`, `/orders`, `/orders/:id`, `/orders/:id/tracking`, `/orders/:id/invoice.pdf`, `/returns`
+- Catalog: `/products`, `/products/:id`, `/products/:id/fbt`, `/products/:id/reviews`, `/products/:id/questions`, `/search`, `/search/suggest`, `/categories`, `/crops`
+- Loyalty/growth: `/coins/redeem`, `/referrals/leaderboard`, `/coupons/validate`
+- Seller: `/seller/kpis`, `/seller/products`, `/seller/products/:id/stock`, `/seller/orders`, `/seller/orders/:id/status`, `/seller/payouts`, `/seller/applications`, `/seller/settings`
+- Admin: `/admin/kpis`, `/admin/orders`, `/admin/products`, `/admin/categories`, `/admin/sellers`, `/admin/customers`, `/admin/coupons`, `/admin/loyalty/rules`, `/admin/content/*`, `/admin/reviews`, `/admin/leads`, `/admin/notifications/broadcast`, `/admin/settings`, `/admin/audit`
+- Uploads: `POST /uploads/signed-url` + direct multipart fallback
+- Events: `POST /events` (A/B, hero variant, abandoned-cart triggers)
+
+### Security
+- Bcrypt passwords, JWT (HS256) with 7-day refresh, role middleware (`customer|seller|admin`), CSRF disabled for token API, rate-limit on `/auth/*`, prepared statements everywhere, request validation per endpoint.
+
+### Deployment notes (in `backend/README.md`)
+- cPanel: upload `backend/`, point subdomain `api.yourdomain.com` to `backend/public`, import `sql/schema.sql` + `sql/seed.sql`, copy `.env.example` → `.env`, set `VITE_API_BASE_URL=https://api.yourdomain.com/api` in the frontend, rebuild.
+- VPS (Nginx + PHP-FPM): sample server block included.
+- Local (XAMPP): one-paragraph guide.
+
+---
+
+## Build order (so each step is visibly usable)
+1. Mock auth + demo accounts + protected routes → you can log in as all three roles immediately.
+2. Admin layout + Dashboard + Products + Orders pages (most-used screens first).
+3. Remaining admin pages (taxonomy, sellers, customers, coupons, loyalty, content, reviews, leads, notifications, settings, audit).
+4. PHP backend scaffold under `/backend` (schema + auth + buyer endpoints + seller + admin in that order).
+5. `backend/README.md` deployment guide + final `API.md` sync.
+
+---
+
+## Questions before I start (will ask after this plan)
+1. **PHP flavor:** Vanilla PHP 8 + PDO, or Laravel 11?
+2. **Database:** MySQL/MariaDB (default for shared hosting) or PostgreSQL?
+3. **Admin scope today:** build *all 14* admin pages, or just the top 6 (Dashboard, Orders, Products, Sellers, Customers, Coupons) and stub the rest?
+
+Approve to switch to build mode; I'll ask the three questions and then execute end-to-end.
