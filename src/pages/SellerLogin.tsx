@@ -8,22 +8,30 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Store, ArrowRight, MessageCircle } from "lucide-react";
+import { Store, ArrowRight, MessageCircle, Info } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useLogin } from "@/hooks/api";
 
 export default function SellerLogin() {
   const { language, t } = useLanguage();
   const navigate = useNavigate();
+  const login = useLogin();
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
-    localStorage.setItem("kc-seller", email);
-    toast.success(language === "ru" ? "Login kaamyab!" : "Logged in!");
-    navigate("/seller");
+    try {
+      const res = await login.mutateAsync({ email, password });
+      toast.success(language === "ru" ? "Login kaamyab!" : "Logged in!");
+      if (res.user.role === "seller") navigate("/seller");
+      else if (res.user.role === "admin") navigate("/admin");
+      else navigate("/account");
+    } catch (err) {
+      toast.error((err as Error).message || "Invalid credentials");
+    }
   };
 
   return (
@@ -47,6 +55,17 @@ export default function SellerLogin() {
               </p>
             </div>
 
+            <div className="rounded-lg bg-primary/5 border border-primary/20 px-3 py-2 text-xs mb-4">
+              <div className="flex items-start gap-2">
+                <Info className="h-3.5 w-3.5 mt-0.5 text-primary shrink-0" />
+                <div>
+                  <p className="font-bold text-primary mb-1">Demo seller account</p>
+                  <p>Email: <span className="font-mono">seller@test.com</span></p>
+                  <p>Password: <span className="font-mono">seller123</span></p>
+                </div>
+              </div>
+            </div>
+
             <div className="premium-card p-6">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
@@ -57,10 +76,10 @@ export default function SellerLogin() {
                   <Label className="text-sm font-semibold text-foreground">
                     {language === "ru" ? "Password" : "Password"}
                   </Label>
-                  <Input required type="password" placeholder="••••••••" className="mt-1.5" />
+                  <Input required type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} className="mt-1.5" />
                 </div>
-                <Button type="submit" variant="hero" className="w-full">
-                  {language === "ru" ? "Login Karein" : "Login"} <ArrowRight className="h-4 w-4" />
+                <Button type="submit" variant="hero" className="w-full" disabled={login.isPending}>
+                  {login.isPending ? "…" : (language === "ru" ? "Login Karein" : "Login")} <ArrowRight className="h-4 w-4" />
                 </Button>
               </form>
 
