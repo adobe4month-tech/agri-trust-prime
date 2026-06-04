@@ -7,6 +7,7 @@
  * Each section is grouped by resource.
  */
 import { api, withMock, auth } from "./client";
+import { mockLogin, mockGetSession, mockLogout } from "./mockAuth";
 import type {
   AuthResponse, SessionUser, Address, CartLine, CartQuote,
   Order, OrderTracking, OrderStatus,
@@ -15,8 +16,13 @@ import type {
   NotificationPrefs, InboxMessage, CropProfileDTO,
   SellerKpis, SellerProduct, Payout, SellerOrder,
   QuoteRequest, QuoteResponse, ReturnRequestDTO, ReturnResponse, AnalyticsEvent,
+  AdminKpis, AdminOrderRow, AdminProductRow, AdminCustomerRow, AdminSellerRow,
+  Coupon, ContentItem, LeadRow, BroadcastMessage, AdminSettings, AuditLogEntry,
+  Category, Crop,
 } from "./types";
 import { products as MOCK_PRODUCTS, type Product } from "@/data/mockData";
+import * as MockAdmin from "./mockAdminData";
+
 
 const ls = {
   get: <T>(k: string, fallback: T): T => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) as T : fallback; } catch { return fallback; } },
