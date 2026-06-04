@@ -11,20 +11,29 @@ import {
   AuthApi, ProfileApi, AddressApi, CartApi, OrderApi, WishlistApi,
   LoyaltyApi, ReferralApi, ProductApi, SearchApi, ReviewApi, QAApi,
   NotificationApi, CropProfileApi, SellerApi, QuoteApi, ReturnApi, LeadApi, AnalyticsApi,
+  AdminApi,
 } from "@/lib/api";
 import type {
   Address, CartLine, OrderStatus, NotificationPrefs, CropProfileDTO,
   QuoteRequest, ReturnRequestDTO, AnalyticsEvent,
+  Coupon, ContentItem, Category, Crop, AdminSettings, BroadcastMessage, AdminSellerRow,
 } from "@/lib/api/types";
+
 
 // ─── Auth / Session ──────────────────────────────────────────────────────────
 export const useSession = () => useQuery({ queryKey: ["session"], queryFn: AuthApi.me, retry: false });
+export const useLogin = () => {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: ({ email, password }: { email: string; password: string }) => AuthApi.login(email, password),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["session"] }) });
+};
 export const useSendOtp = () => useMutation({ mutationFn: (phone: string) => AuthApi.sendOtp(phone) });
 export const useVerifyOtp = () => {
   const qc = useQueryClient();
   return useMutation({ mutationFn: ({ phone, otp }: { phone: string; otp: string }) => AuthApi.verifyOtp(phone, otp),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["session"] }) });
 };
+
 export const useLogout = () => {
   const qc = useQueryClient();
   return useMutation({ mutationFn: AuthApi.logout, onSuccess: () => qc.clear() });
