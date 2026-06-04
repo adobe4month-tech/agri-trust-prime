@@ -255,3 +255,132 @@ export const UploadApi = {
     withMock(() => api<{ uploadUrl: string; publicUrl: string }>("/uploads/sign", { method: "POST", body: { filename, contentType } }),
       () => ({ uploadUrl: "data:mock", publicUrl: URL.createObjectURL(new Blob([filename])) })),
 };
+
+// ─── ADMIN ───────────────────────────────────────────────────────────────────
+const adminLs = <T>(k: string, fb: T): T => ls.get(k, fb);
+const adminSet = (k: string, v: unknown) => ls.set(k, v);
+
+export const AdminApi = {
+  kpis: () => withMock(() => api<AdminKpis>("/admin/kpis"), () => MockAdmin.adminKpis),
+
+  // Orders
+  orders: (params: { status?: OrderStatus; q?: string } = {}) =>
+    withMock(() => api<AdminOrderRow[]>("/admin/orders", { query: params as any }),
+      () => {
+        let rows = [...MockAdmin.adminOrders];
+        if (params.status) rows = rows.filter(r => r.status === params.status);
+        if (params.q) { const q = params.q.toLowerCase(); rows = rows.filter(r => r.id.toLowerCase().includes(q) || r.buyer.toLowerCase().includes(q) || r.phone.includes(q)); }
+        return rows;
+      }),
+  setOrderStatus: (id: string, status: OrderStatus) =>
+    withMock(() => api<{ ok: true }>(`/admin/orders/${id}/status`, { method: "PATCH", body: { status } }), () => ({ ok: true as const })),
+  refundOrder: (id: string) => withMock(() => api<{ ok: true }>(`/admin/orders/${id}/refund`, { method: "POST" }), () => ({ ok: true as const })),
+
+  // Products
+  products: (params: { q?: string; status?: string } = {}) =>
+    withMock(() => api<AdminProductRow[]>("/admin/products", { query: params as any }),
+      () => {
+        let rows = [...MockAdmin.adminProducts];
+        if (params.q) { const q = params.q.toLowerCase(); rows = rows.filter(r => r.name.toLowerCase().includes(q) || r.brand.toLowerCase().includes(q)); }
+        if (params.status) rows = rows.filter(r => r.status === params.status);
+        return rows;
+      }),
+  saveProduct: (p: Partial<AdminProductRow> & { id?: number }) =>
+    withMock(() => api<AdminProductRow>("/admin/products", { method: p.id ? "PUT" : "POST", body: p }),
+      () => ({ ...(MockAdmin.adminProducts[0]), ...p } as AdminProductRow)),
+  deleteProduct: (id: number) =>
+    withMock(() => api<{ ok: true }>(`/admin/products/${id}`, { method: "DELETE" }), () => ({ ok: true as const })),
+
+  // Taxonomy
+  categories: () => withMock(() => api<Category[]>("/admin/categories"), () => adminLs("kc-admin-cats", MockAdmin.categories)),
+  saveCategory: (c: Partial<Category>) =>
+    withMock(() => api<Category>("/admin/categories", { method: c.id ? "PUT" : "POST", body: c }),
+      () => { const cur = adminLs<Category[]>("kc-admin-cats", MockAdmin.categories); const next = c.id ? cur.map(x => x.id === c.id ? { ...x, ...c } as Category : x) : [...cur, { ...c, id: uid(), productCount: 0 } as Category]; adminSet("kc-admin-cats", next); return next.find(x => x.id === (c.id ?? next[next.length - 1].id))!; }),
+  deleteCategory: (id: string) =>
+    withMock(() => api<{ ok: true }>(`/admin/categories/${id}`, { method: "DELETE" }),
+      () => { adminSet("kc-admin-cats", adminLs<Category[]>("kc-admin-cats", MockAdmin.categories).filter(x => x.id !== id)); return { ok: true as const }; }),
+  crops: () => withMock(() => api<Crop[]>("/admin/crops"), () => adminLs("kc-admin-crops", MockAdmin.crops)),
+  saveCrop: (c: Partial<Crop>) =>
+    withMock(() => api<Crop>("/admin/crops", { method: c.id ? "PUT" : "POST", body: c }),
+      () => { const cur = adminLs<Crop[]>("kc-admin-crops", MockAdmin.crops); const next = c.id ? cur.map(x => x.id === c.id ? { ...x, ...c } as Crop : x) : [...cur, { ...c, id: uid(), productCount: 0 } as Crop]; adminSet("kc-admin-crops", next); return next[next.length - 1]; }),
+  deleteCrop: (id: string) =>
+    withMock(() => api<{ ok: true }>(`/admin/crops/${id}`, { method: "DELETE" }),
+      () => { adminSet("kc-admin-crops", adminLs<Crop[]>("kc-admin-crops", MockAdmin.crops).filter(x => x.id !== id)); return { ok: true as const }; }),
+
+  // Sellers
+  sellers: (status?: "pending" | "approved" | "suspended") =>
+    withMock(() => api<AdminSellerRow[]>("/admin/sellers", { query: { status } }),
+      () => { const all = adminLs<AdminSellerRow[]>("kc-admin-sellers", MockAdmin.adminSellers); return status ? all.filter(s => s.status === status) : all; }),
+  setSellerStatus: (id: string, status: AdminSellerRow["status"]) =>
+    withMock(() => api<{ ok: true }>(`/admin/sellers/${id}/status`, { method: "PATCH", body: { status } }),
+      () => { const all = adminLs<AdminSellerRow[]>("kc-admin-sellers", MockAdmin.adminSellers).map(s => s.id === id ? { ...s, status } : s); adminSet("kc-admin-sellers", all); return { ok: true as const }; }),
+
+  // Customers
+  customers: (q?: string) =>
+    withMock(() => api<AdminCustomerRow[]>("/admin/customers", { query: { q } }),
+      () => { const all = adminLs<AdminCustomerRow[]>("kc-admin-customers", MockAdmin.adminCustomers); if (!q) return all; const ql = q.toLowerCase(); return all.filter(c => c.name.toLowerCase().includes(ql) || c.phone.includes(q) || c.email?.toLowerCase().includes(ql)); }),
+  adjustCoins: (id: string, delta: number) =>
+    withMock(() => api<{ ok: true }>(`/admin/customers/${id}/coins`, { method: "POST", body: { delta } }),
+      () => { const all = adminLs<AdminCustomerRow[]>("kc-admin-customers", MockAdmin.adminCustomers).map(c => c.id === id ? { ...c, coins: c.coins + delta } : c); adminSet("kc-admin-customers", all); return { ok: true as const }; }),
+  toggleBlockCustomer: (id: string) =>
+    withMock(() => api<{ ok: true }>(`/admin/customers/${id}/block`, { method: "POST" }),
+      () => { const all = adminLs<AdminCustomerRow[]>("kc-admin-customers", MockAdmin.adminCustomers).map(c => c.id === id ? { ...c, blocked: !c.blocked } : c); adminSet("kc-admin-customers", all); return { ok: true as const }; }),
+
+  // Coupons
+  coupons: () => withMock(() => api<Coupon[]>("/admin/coupons"), () => adminLs("kc-admin-coupons", MockAdmin.coupons)),
+  saveCoupon: (c: Partial<Coupon>) =>
+    withMock(() => api<Coupon>("/admin/coupons", { method: c.id ? "PUT" : "POST", body: c }),
+      () => { const cur = adminLs<Coupon[]>("kc-admin-coupons", MockAdmin.coupons); const next = c.id ? cur.map(x => x.id === c.id ? { ...x, ...c } as Coupon : x) : [...cur, { ...c, id: uid(), usedCount: 0, active: true } as Coupon]; adminSet("kc-admin-coupons", next); return next[next.length - 1]; }),
+  deleteCoupon: (id: string) =>
+    withMock(() => api<{ ok: true }>(`/admin/coupons/${id}`, { method: "DELETE" }),
+      () => { adminSet("kc-admin-coupons", adminLs<Coupon[]>("kc-admin-coupons", MockAdmin.coupons).filter(x => x.id !== id)); return { ok: true as const }; }),
+
+  // Loyalty / coins rules
+  loyaltyRules: () => withMock(() => api<{ earnRate: number; redeemRate: number; minRedeem: number }>("/admin/loyalty/rules"),
+    () => adminLs("kc-admin-loyalty", { earnRate: 1, redeemRate: 2, minRedeem: 100 })),
+  saveLoyaltyRules: (r: { earnRate: number; redeemRate: number; minRedeem: number }) =>
+    withMock(() => api<{ ok: true }>("/admin/loyalty/rules", { method: "PUT", body: r }), () => { adminSet("kc-admin-loyalty", r); return { ok: true as const }; }),
+  grantCoins: (customerId: string, coins: number, reason: string) =>
+    withMock(() => api<{ ok: true }>("/admin/loyalty/grant", { method: "POST", body: { customerId, coins, reason } }), () => ({ ok: true as const })),
+
+  // Content
+  content: (kind?: ContentItem["kind"]) =>
+    withMock(() => api<ContentItem[]>("/admin/content", { query: { kind } }),
+      () => { const all = adminLs<ContentItem[]>("kc-admin-content", MockAdmin.contentItems); return kind ? all.filter(c => c.kind === kind) : all; }),
+  saveContent: (c: Partial<ContentItem>) =>
+    withMock(() => api<ContentItem>("/admin/content", { method: c.id ? "PUT" : "POST", body: c }),
+      () => { const cur = adminLs<ContentItem[]>("kc-admin-content", MockAdmin.contentItems); const next = c.id ? cur.map(x => x.id === c.id ? { ...x, ...c } as ContentItem : x) : [...cur, { ...c, id: uid(), createdAt: new Date().toISOString(), published: false } as ContentItem]; adminSet("kc-admin-content", next); return next[next.length - 1]; }),
+  deleteContent: (id: string) =>
+    withMock(() => api<{ ok: true }>(`/admin/content/${id}`, { method: "DELETE" }),
+      () => { adminSet("kc-admin-content", adminLs<ContentItem[]>("kc-admin-content", MockAdmin.contentItems).filter(x => x.id !== id)); return { ok: true as const }; }),
+
+  // Reviews moderation
+  reviewsAll: (status?: "pending" | "approved" | "hidden") =>
+    withMock(() => api<Review[]>("/admin/reviews", { query: { status } }),
+      () => { const all = adminLs<Review[]>("kc-admin-reviews", MockAdmin.adminReviews); return status ? all.filter(r => r.status === status) : all; }),
+  setReviewStatus: (id: string, status: "approved" | "hidden") =>
+    withMock(() => api<{ ok: true }>(`/admin/reviews/${id}/status`, { method: "PATCH", body: { status } }),
+      () => { const all = adminLs<Review[]>("kc-admin-reviews", MockAdmin.adminReviews).map(r => r.id === id ? { ...r, status } : r); adminSet("kc-admin-reviews", all); return { ok: true as const }; }),
+
+  // Leads
+  leadsList: () => withMock(() => api<LeadRow[]>("/admin/leads"), () => adminLs("kc-admin-leads", MockAdmin.leads)),
+  markLeadHandled: (id: string) =>
+    withMock(() => api<{ ok: true }>(`/admin/leads/${id}/handled`, { method: "POST" }),
+      () => { const all = adminLs<LeadRow[]>("kc-admin-leads", MockAdmin.leads).map(l => l.id === id ? { ...l, handled: true } : l); adminSet("kc-admin-leads", all); return { ok: true as const }; }),
+
+  // Notifications / broadcast
+  broadcasts: () => withMock(() => api<BroadcastMessage[]>("/admin/notifications"), () => adminLs("kc-admin-broadcasts", MockAdmin.broadcasts)),
+  sendBroadcast: (m: Omit<BroadcastMessage, "id" | "sentAt">) =>
+    withMock(() => api<BroadcastMessage>("/admin/notifications/broadcast", { method: "POST", body: m }),
+      () => { const msg: BroadcastMessage = { ...m, id: uid(), sentAt: new Date().toISOString(), sentBy: "admin@test.com" }; const cur = adminLs<BroadcastMessage[]>("kc-admin-broadcasts", MockAdmin.broadcasts); adminSet("kc-admin-broadcasts", [msg, ...cur]); return msg; }),
+
+  // Settings
+  settings: () => withMock(() => api<AdminSettings>("/admin/settings"), () => adminLs("kc-admin-settings", MockAdmin.adminSettings)),
+  saveSettings: (s: Partial<AdminSettings>) =>
+    withMock(() => api<AdminSettings>("/admin/settings", { method: "PUT", body: s }),
+      () => { const cur = adminLs<AdminSettings>("kc-admin-settings", MockAdmin.adminSettings); const next = { ...cur, ...s }; adminSet("kc-admin-settings", next); return next; }),
+
+  // Audit
+  audit: () => withMock(() => api<AuditLogEntry[]>("/admin/audit"), () => MockAdmin.auditLog),
+};
+
