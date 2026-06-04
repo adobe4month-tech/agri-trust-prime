@@ -12,7 +12,10 @@ export default function ProtectedRoute({ children, role }: { children: ReactNode
   const location = useLocation();
 
   if (isLoading) return <div className="min-h-screen grid place-items-center text-sm text-muted-foreground">Loading…</div>;
-  if (!user) return <Navigate to="/seller-login" replace state={{ from: location.pathname }} />;
+  if (!user) {
+    const dest = role === "admin" ? "/admin-login" : role === "seller" ? "/seller-login" : "/login";
+    return <Navigate to={dest} replace state={{ from: location.pathname }} />;
+  }
   if (role && user.role !== role) return <Navigate to="/" replace />;
   return <>{children}</>;
 }
