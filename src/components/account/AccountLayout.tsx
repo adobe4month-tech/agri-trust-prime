@@ -1,4 +1,4 @@
-import { Link, useLocation, Navigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ReactNode, useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -7,15 +7,21 @@ import AuthModal from "@/components/AuthModal";
 import { User, Package, MapPin, Heart, Coins, Sprout, Bell, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useSession, useLogout } from "@/hooks/api";
 
 export default function AccountLayout({ children, title }: { children: ReactNode; title: string }) {
   const { pathname } = useLocation();
   const { language } = useLanguage();
   const t = (en: string, ru: string) => language === "ru" ? ru : en;
   const [authOpen, setAuthOpen] = useState(false);
+  const { data: user, isLoading } = useSession();
+  const logout = useLogout();
 
-  const phone = typeof window !== "undefined" ? localStorage.getItem("kc-user-phone") : null;
-  if (!phone) {
+  if (isLoading) {
+    return <div className="min-h-screen grid place-items-center text-sm text-muted-foreground">Loading…</div>;
+  }
+
+  if (!user) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <Header />
@@ -23,9 +29,9 @@ export default function AccountLayout({ children, title }: { children: ReactNode
           <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center mb-4"><User className="h-8 w-8 text-primary" /></div>
           <h2 className="text-2xl font-extrabold mb-2">{t("Login Required", "Login Zaruri Hai")}</h2>
           <p className="text-sm text-muted-foreground mb-4">{t("Login to access your account portal.", "Account portal ke liye login karein.")}</p>
-          <Button variant="hero" onClick={() => setAuthOpen(true)}>{t("Login with Phone", "Phone Se Login")}</Button>
+          <Button variant="hero" onClick={() => setAuthOpen(true)}>{t("Sign In", "Login Karein")}</Button>
         </main>
-        <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
+        <AuthModal open={authOpen} onOpenChange={setAuthOpen} redirectTo="/account" />
         <Footer />
         <BottomNav />
       </div>
@@ -50,7 +56,7 @@ export default function AccountLayout({ children, title }: { children: ReactNode
           <aside className="bg-card border border-border rounded-2xl p-3 h-fit lg:sticky lg:top-24">
             <div className="px-3 py-2 mb-2 flex items-center gap-2 border-b border-border">
               <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center"><User className="h-4 w-4 text-primary" /></div>
-              <div className="min-w-0"><p className="text-xs text-muted-foreground">{t("Logged in", "Login")}</p><p className="font-bold text-sm truncate">{phone}</p></div>
+              <div className="min-w-0"><p className="text-xs text-muted-foreground">{t("Logged in", "Login")}</p><p className="font-bold text-sm truncate">{user.name || user.phone}</p></div>
             </div>
             <nav className="space-y-1 mt-2 lg:flex-col flex overflow-x-auto">
               {nav.map(n => {
@@ -61,7 +67,7 @@ export default function AccountLayout({ children, title }: { children: ReactNode
                   </Link>
                 );
               })}
-              <button onClick={() => { localStorage.removeItem("kc-user-phone"); window.location.href = "/"; }} className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold text-destructive hover:bg-destructive/5 shrink-0">
+              <button onClick={async () => { await logout.mutateAsync(); window.location.href = "/"; }} className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold text-destructive hover:bg-destructive/5 shrink-0">
                 <LogOut className="h-4 w-4" />{t("Logout", "Logout")}
               </button>
             </nav>

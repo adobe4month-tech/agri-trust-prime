@@ -18,7 +18,7 @@ export interface CoinsBalance { coins: number; rate: number; redeemableRs: numbe
 export interface CoinsTxn { id: string; date: string; type: "earn" | "redeem"; coins: number; reason: string; }
 export interface ReferralStats { code: string; invited: number; converted: number; coinsEarned: number; leaderboard: { name: string; coins: number; rank: number }[]; }
 
-export interface Review { id: string; productId: number; user: string; rating: number; text: string; photos?: string[]; createdAt: string; verified: boolean; }
+export interface Review { id: string; productId: number; user: string; rating: number; text: string; photos?: string[]; createdAt: string; verified: boolean; status?: "pending" | "approved" | "hidden"; }
 export interface QAEntry { id: string; productId: number; question: string; answer?: string; user: string; createdAt: string; }
 
 export interface SearchSuggest { products: Pick<Product, "id" | "name" | "slug" | "image">[]; queries: string[]; }
@@ -42,3 +42,24 @@ export interface ReturnRequestDTO { orderId: string; reason: string; items: { pr
 export interface ReturnResponse { rmaId: string; etaDays: number; }
 
 export interface AnalyticsEvent { name: string; props?: Record<string, unknown>; ts?: number; }
+
+// ─── ADMIN ───────────────────────────────────────────────────────────────────
+export interface AdminKpis {
+  revenueToday: number; revenue7d: number; revenue30d: number;
+  ordersToday: number; ordersPending: number;
+  newUsers7d: number; activeSellers: number;
+  lowStock: number; pendingSellerApplications: number;
+  topSkus: { productId: number; name: string; unitsSold: number; revenue: number }[];
+}
+export interface AdminOrderRow { id: string; date: string; buyer: string; phone: string; city: string; sellerId?: string; sellerName?: string; amountRs: number; status: OrderStatus; paymentMethod: "cod" | "online"; }
+export interface AdminProductRow extends Product { sellerName?: string; status: "active" | "draft" | "archived"; }
+export interface AdminCustomerRow { id: string; name: string; phone: string; email?: string; ordersCount: number; lifetimeRs: number; coins: number; createdAt: string; blocked?: boolean; }
+export interface AdminSellerRow { id: string; brand: string; ownerName: string; phone: string; city: string; status: "pending" | "approved" | "suspended"; rating: number; lifetimeRs: number; createdAt: string; }
+export interface Coupon { id: string; code: string; type: "percent" | "flat"; value: number; minCart?: number; usageCap?: number; usedCount: number; validFrom: string; validTo: string; active: boolean; }
+export interface ContentItem { id: string; kind: "blog" | "video" | "marketRate" | "heroBanner" | "abVariant"; title: string; slug?: string; body?: string; mediaUrl?: string; published: boolean; createdAt: string; }
+export interface LeadRow { id: string; source: "get-quote" | "contact" | "exit-intent" | "footer" | "chat"; name?: string; phone?: string; email?: string; message?: string; createdAt: string; handled?: boolean; }
+export interface BroadcastMessage { id: string; channel: "push" | "sms" | "whatsapp"; subject?: string; body: string; audience: "all" | "buyers" | "sellers" | "vip"; sentAt?: string; sentBy?: string; }
+export interface AdminSettings { siteName: string; whatsappNumber: string; supportEmail: string; codEnabled: boolean; onlinePayEnabled: boolean; freeShippingMin: number; taxPercent: number; seoTitle: string; seoDescription: string; }
+export interface AuditLogEntry { id: string; actor: string; role: string; action: string; target: string; createdAt: string; }
+export interface Category { id: string; name: string; slug: string; parent?: string; productCount: number; }
+export interface Crop { id: string; name: string; season: "kharif" | "rabi" | "perennial"; productCount: number; }
