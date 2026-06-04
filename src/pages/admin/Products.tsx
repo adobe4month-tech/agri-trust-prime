@@ -20,7 +20,7 @@ function ProductForm({ initial, onSave, onCancel }: { initial?: Partial<AdminPro
         <div className="col-span-2"><Label>Name</Label><Input value={p.name || ""} onChange={e => setP({ ...p, name: e.target.value })} /></div>
         <div><Label>Slug</Label><Input value={p.slug || ""} onChange={e => setP({ ...p, slug: e.target.value })} /></div>
         <div><Label>Brand</Label><Input value={p.brand || ""} onChange={e => setP({ ...p, brand: e.target.value })} /></div>
-        <div><Label>Category</Label><Input value={p.category || ""} onChange={e => setP({ ...p, category: e.target.value })} /></div>
+        <div><Label>Category</Label><Input value={p.category || ""} onChange={e => setP({ ...p, category: e.target.value as any })} /></div>
         <div><Label>Image URL</Label><Input value={p.image || ""} onChange={e => setP({ ...p, image: e.target.value })} /></div>
         <div><Label>Price (Rs)</Label><Input type="number" value={p.price || 0} onChange={e => setP({ ...p, price: +e.target.value })} /></div>
         <div><Label>MRP (Rs)</Label><Input type="number" value={(p as any).mrp || 0} onChange={e => setP({ ...p, mrp: +e.target.value } as any)} /></div>
