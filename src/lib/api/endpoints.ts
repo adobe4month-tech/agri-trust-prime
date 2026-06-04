@@ -32,6 +32,15 @@ const uid = () => (crypto.randomUUID?.() ?? Math.random().toString(36).slice(2))
 
 // ─── AUTH ────────────────────────────────────────────────────────────────────
 export const AuthApi = {
+  login: (email: string, password: string) =>
+    withMock(
+      () => api<AuthResponse>("/auth/login", { method: "POST", body: { email, password } }).then((r) => {
+        auth.setToken(r.token);
+        localStorage.setItem("kc-auth-user", JSON.stringify(r.user));
+        return r;
+      }),
+      () => mockLogin(email, password),
+    ),
   sendOtp: (phone: string) =>
     withMock(() => api<{ ok: true }>("/auth/send-otp", { method: "POST", body: { phone } }),
       () => ({ ok: true as const })),
@@ -40,18 +49,17 @@ export const AuthApi = {
       () => {
         const user: SessionUser = { id: "u_" + phone, phone, role: "customer" };
         const token = "mock." + btoa(phone) + ".token";
-        auth.setToken(token); localStorage.setItem("kc-user-phone", phone);
+        auth.setToken(token);
+        localStorage.setItem("kc-auth-user", JSON.stringify(user));
         return { token, user };
       }),
-  me: () => withMock(() => api<SessionUser>("/auth/me"),
-    () => {
-      const phone = localStorage.getItem("kc-user-phone");
-      if (!phone) throw new Error("Not authenticated");
-      return { id: "u_" + phone, phone, role: "customer" } as SessionUser;
-    }),
-  logout: () => withMock(async () => { await api("/auth/logout", { method: "POST" }); auth.setToken(null); },
-    async () => { auth.setToken(null); localStorage.removeItem("kc-user-phone"); }),
+  me: () => withMock(() => api<SessionUser>("/auth/me"), () => mockGetSession()),
+  logout: () => withMock(
+    async () => { try { await api("/auth/logout", { method: "POST" }); } catch {} mockLogout(); },
+    async () => { mockLogout(); },
+  ),
 };
+
 
 // ─── PROFILE ─────────────────────────────────────────────────────────────────
 export const ProfileApi = {
