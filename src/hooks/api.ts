@@ -107,3 +107,56 @@ export const useCreateQuote = () => useMutation({ mutationFn: (b: QuoteRequest) 
 export const useCreateReturn = () => useMutation({ mutationFn: (b: ReturnRequestDTO) => ReturnApi.create(b) });
 export const useCaptureLead = () => useMutation({ mutationFn: LeadApi.capture });
 export const useTrackEvent = () => useMutation({ mutationFn: (e: AnalyticsEvent) => AnalyticsApi.track(e) });
+
+// ─── Admin ───────────────────────────────────────────────────────────────────
+export const useAdminKpis = () => useQuery({ queryKey: ["admin-kpis"], queryFn: AdminApi.kpis });
+
+export const useAdminOrders = (params: { status?: OrderStatus; q?: string } = {}) =>
+  useQuery({ queryKey: ["admin-orders", params], queryFn: () => AdminApi.orders(params) });
+export const useSetAdminOrderStatus = () => { const qc = useQueryClient(); return useMutation({ mutationFn: ({ id, status }: { id: string; status: OrderStatus }) => AdminApi.setOrderStatus(id, status), onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-orders"] }) }); };
+export const useRefundOrder = () => { const qc = useQueryClient(); return useMutation({ mutationFn: (id: string) => AdminApi.refundOrder(id), onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-orders"] }) }); };
+
+export const useAdminProducts = (params: { q?: string; status?: string } = {}) =>
+  useQuery({ queryKey: ["admin-products", params], queryFn: () => AdminApi.products(params) });
+export const useSaveAdminProduct = () => { const qc = useQueryClient(); return useMutation({ mutationFn: AdminApi.saveProduct, onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-products"] }) }); };
+export const useDeleteAdminProduct = () => { const qc = useQueryClient(); return useMutation({ mutationFn: (id: number) => AdminApi.deleteProduct(id), onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-products"] }) }); };
+
+export const useAdminCategories = () => useQuery({ queryKey: ["admin-cats"], queryFn: AdminApi.categories });
+export const useSaveCategory = () => { const qc = useQueryClient(); return useMutation({ mutationFn: (c: Partial<Category>) => AdminApi.saveCategory(c), onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-cats"] }) }); };
+export const useDeleteCategory = () => { const qc = useQueryClient(); return useMutation({ mutationFn: (id: string) => AdminApi.deleteCategory(id), onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-cats"] }) }); };
+export const useAdminCrops = () => useQuery({ queryKey: ["admin-crops"], queryFn: AdminApi.crops });
+export const useSaveCrop = () => { const qc = useQueryClient(); return useMutation({ mutationFn: (c: Partial<Crop>) => AdminApi.saveCrop(c), onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-crops"] }) }); };
+export const useDeleteCrop = () => { const qc = useQueryClient(); return useMutation({ mutationFn: (id: string) => AdminApi.deleteCrop(id), onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-crops"] }) }); };
+
+export const useAdminSellers = (status?: AdminSellerRow["status"]) => useQuery({ queryKey: ["admin-sellers", status], queryFn: () => AdminApi.sellers(status) });
+export const useSetSellerStatus = () => { const qc = useQueryClient(); return useMutation({ mutationFn: ({ id, status }: { id: string; status: AdminSellerRow["status"] }) => AdminApi.setSellerStatus(id, status), onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-sellers"] }) }); };
+
+export const useAdminCustomers = (q?: string) => useQuery({ queryKey: ["admin-customers", q], queryFn: () => AdminApi.customers(q) });
+export const useAdjustCustomerCoins = () => { const qc = useQueryClient(); return useMutation({ mutationFn: ({ id, delta }: { id: string; delta: number }) => AdminApi.adjustCoins(id, delta), onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-customers"] }) }); };
+export const useToggleBlockCustomer = () => { const qc = useQueryClient(); return useMutation({ mutationFn: (id: string) => AdminApi.toggleBlockCustomer(id), onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-customers"] }) }); };
+
+export const useCoupons = () => useQuery({ queryKey: ["admin-coupons"], queryFn: AdminApi.coupons });
+export const useSaveCoupon = () => { const qc = useQueryClient(); return useMutation({ mutationFn: (c: Partial<Coupon>) => AdminApi.saveCoupon(c), onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-coupons"] }) }); };
+export const useDeleteCoupon = () => { const qc = useQueryClient(); return useMutation({ mutationFn: (id: string) => AdminApi.deleteCoupon(id), onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-coupons"] }) }); };
+
+export const useLoyaltyRules = () => useQuery({ queryKey: ["admin-loyalty"], queryFn: AdminApi.loyaltyRules });
+export const useSaveLoyaltyRules = () => { const qc = useQueryClient(); return useMutation({ mutationFn: AdminApi.saveLoyaltyRules, onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-loyalty"] }) }); };
+export const useGrantCoins = () => useMutation({ mutationFn: ({ customerId, coins, reason }: { customerId: string; coins: number; reason: string }) => AdminApi.grantCoins(customerId, coins, reason) });
+
+export const useAdminContent = (kind?: ContentItem["kind"]) => useQuery({ queryKey: ["admin-content", kind], queryFn: () => AdminApi.content(kind) });
+export const useSaveContent = () => { const qc = useQueryClient(); return useMutation({ mutationFn: (c: Partial<ContentItem>) => AdminApi.saveContent(c), onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-content"] }) }); };
+export const useDeleteContent = () => { const qc = useQueryClient(); return useMutation({ mutationFn: (id: string) => AdminApi.deleteContent(id), onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-content"] }) }); };
+
+export const useAdminReviews = (status?: "pending" | "approved" | "hidden") => useQuery({ queryKey: ["admin-reviews", status], queryFn: () => AdminApi.reviewsAll(status) });
+export const useSetReviewStatus = () => { const qc = useQueryClient(); return useMutation({ mutationFn: ({ id, status }: { id: string; status: "approved" | "hidden" }) => AdminApi.setReviewStatus(id, status), onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-reviews"] }) }); };
+
+export const useAdminLeads = () => useQuery({ queryKey: ["admin-leads"], queryFn: AdminApi.leadsList });
+export const useMarkLeadHandled = () => { const qc = useQueryClient(); return useMutation({ mutationFn: (id: string) => AdminApi.markLeadHandled(id), onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-leads"] }) }); };
+
+export const useBroadcasts = () => useQuery({ queryKey: ["admin-broadcasts"], queryFn: AdminApi.broadcasts });
+export const useSendBroadcast = () => { const qc = useQueryClient(); return useMutation({ mutationFn: (m: Omit<BroadcastMessage, "id" | "sentAt">) => AdminApi.sendBroadcast(m), onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-broadcasts"] }) }); };
+
+export const useAdminSettings = () => useQuery({ queryKey: ["admin-settings"], queryFn: AdminApi.settings });
+export const useSaveAdminSettings = () => { const qc = useQueryClient(); return useMutation({ mutationFn: (s: Partial<AdminSettings>) => AdminApi.saveSettings(s), onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-settings"] }) }); };
+
+export const useAuditLog = () => useQuery({ queryKey: ["admin-audit"], queryFn: AdminApi.audit });
