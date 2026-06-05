@@ -12,6 +12,7 @@ use KissanCares\Controllers\OrderController;
 use KissanCares\Controllers\SellerController;
 use KissanCares\Controllers\AdminController;
 use KissanCares\Controllers\LeadController;
+use KissanCares\Controllers\BuyerController;
 
 Dotenv::createImmutable(__DIR__ . '/..')->safeLoad();
 
@@ -51,6 +52,39 @@ $r->get ('/me/orders',               [OrderController::class, 'mine']);
 $r->get ('/orders/{id}',             [OrderController::class, 'get']);
 $r->get ('/orders/{id}/tracking',    [OrderController::class, 'tracking']);
 $r->post('/orders/{id}/reorder',     [OrderController::class, 'reorder']);
+
+// BUYER (profile, addresses, wishlist, coins, notif prefs, crop profile, referral)
+$r->get   ('/me/profile',              [BuyerController::class, 'getProfile']);
+$r->put   ('/me/profile',              [BuyerController::class, 'updateProfile']);
+$r->get   ('/me/addresses',            [BuyerController::class, 'listAddresses']);
+$r->post  ('/me/addresses',            [BuyerController::class, 'createAddress']);
+$r->put   ('/me/addresses/{id}',       [BuyerController::class, 'updateAddress']);
+$r->delete('/me/addresses/{id}',       [BuyerController::class, 'deleteAddress']);
+$r->get   ('/me/wishlist',             [BuyerController::class, 'listWishlist']);
+$r->post  ('/me/wishlist',             [BuyerController::class, 'addWishlist']);
+$r->delete('/me/wishlist/{productId}', [BuyerController::class, 'removeWishlist']);
+$r->get   ('/me/coins',                [BuyerController::class, 'coinsBalance']);
+$r->get   ('/me/coins/history',        [BuyerController::class, 'coinsHistory']);
+$r->post  ('/coins/redeem',            [BuyerController::class, 'redeemCoins']);
+$r->get   ('/me/referral',             [BuyerController::class, 'referral']);
+$r->get   ('/me/notification-prefs',   [BuyerController::class, 'notifPrefs']);
+$r->put   ('/me/notification-prefs',   [BuyerController::class, 'updateNotifPrefs']);
+$r->get   ('/me/notifications',        [BuyerController::class, 'inbox']);
+$r->post  ('/me/notifications/{id}/read', [BuyerController::class, 'markRead']);
+$r->get   ('/me/crop-profile',         [BuyerController::class, 'getCropProfile']);
+$r->put   ('/me/crop-profile',         [BuyerController::class, 'updateCropProfile']);
+
+// REVIEWS / Q&A / QUOTES / RETURNS / UPLOADS
+$r->get   ('/products/{id}/reviews',   [BuyerController::class, 'listReviews']);
+$r->post  ('/products/{id}/reviews',   [BuyerController::class, 'createReview']);
+$r->get   ('/products/{id}/questions', [BuyerController::class, 'listQuestions']);
+$r->post  ('/products/{id}/questions', [BuyerController::class, 'askQuestion']);
+$r->post  ('/quotes',                  [BuyerController::class, 'createQuote']);
+$r->post  ('/returns',                 [BuyerController::class, 'createReturn']);
+$r->post  ('/uploads/sign',            [BuyerController::class, 'signUpload']);
+
+// Loyalty grant (admin)
+$r->post  ('/admin/loyalty/grant',     [AdminController::class, 'grantCoins']);
 
 // SELLER
 $r->get  ('/seller/kpis',                [SellerController::class, 'kpis']);
