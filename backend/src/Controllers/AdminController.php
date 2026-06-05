@@ -141,14 +141,69 @@ class AdminController {
         if (!empty($q['kind'])) { $sql .= ' AND kind = ?'; $args[] = $q['kind']; }
         $st = Db::pdo()->prepare($sql); $st->execute($args); return $st->fetchAll();
     }
-    public function saveCoupon(array $p, array $q, array $b): array  { $this->admin(); return $b; /* TODO insert/update */ }
-    public function deleteCoupon(array $p): array                    { $this->admin(); Db::pdo()->prepare('DELETE FROM coupons WHERE id = ?')->execute([$p['id']]); return ['ok' => true]; }
-    public function saveCategory(array $p, array $q, array $b): array{ $this->admin(); return $b; }
-    public function deleteCategory(array $p): array                  { $this->admin(); Db::pdo()->prepare('DELETE FROM categories WHERE id = ?')->execute([$p['id']]); return ['ok' => true]; }
-    public function saveCrop(array $p, array $q, array $b): array    { $this->admin(); return $b; }
-    public function deleteCrop(array $p): array                      { $this->admin(); Db::pdo()->prepare('DELETE FROM crops WHERE id = ?')->execute([$p['id']]); return ['ok' => true]; }
-    public function saveContent(array $p, array $q, array $b): array { $this->admin(); return $b; }
-    public function deleteContent(array $p): array                   { $this->admin(); Db::pdo()->prepare('DELETE FROM content_items WHERE id = ?')->execute([$p['id']]); return ['ok' => true]; }
+    public function saveCoupon(array $p, array $q, array $b): array {
+        $this->admin();
+        $pdo = Db::pdo();
+        $id = $b['id'] ?? bin2hex(random_bytes(6));
+        $pdo->prepare("INSERT INTO coupons (id, code, type, value, min_cart, usage_cap, used_count, valid_from, valid_to, active)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                       ON DUPLICATE KEY UPDATE code=VALUES(code), type=VALUES(type), value=VALUES(value),
+                         min_cart=VALUES(min_cart), usage_cap=VALUES(usage_cap),
+                         valid_from=VALUES(valid_from), valid_to=VALUES(valid_to), active=VALUES(active)")
+            ->execute([$id, $b['code'] ?? '', $b['type'] ?? 'percent', (int)($b['value'] ?? 0),
+                       (int)($b['minCart'] ?? 0), (int)($b['usageCap'] ?? 0), (int)($b['usedCount'] ?? 0),
+                       $b['validFrom'] ?? null, $b['validTo'] ?? null, !empty($b['active']) ? 1 : 0]);
+        $this->audit('save_coupon', 'coupon#' . $id);
+        return ['id' => $id] + $b;
+    }
+    public function deleteCoupon(array $p): array { $this->admin(); Db::pdo()->prepare('DELETE FROM coupons WHERE id = ?')->execute([$p['id']]); $this->audit('delete_coupon','coupon#'.$p['id']); return ['ok' => true]; }
+
+    public function saveCategory(array $p, array $q, array $b): array {
+        $this->admin();
+        $id = $b['id'] ?? bin2hex(random_bytes(6));
+        Db::pdo()->prepare("INSERT INTO categories (id, name, slug, parent, product_count) VALUES (?, ?, ?, ?, ?)
+                            ON DUPLICATE KEY UPDATE name=VALUES(name), slug=VALUES(slug), parent=VALUES(parent)")
+            ->execute([$id, $b['name'] ?? '', $b['slug'] ?? '', $b['parent'] ?? null, (int)($b['productCount'] ?? 0)]);
+        $this->audit('save_category', 'category#' . $id);
+        return ['id' => $id] + $b;
+    }
+    public function deleteCategory(array $p): array { $this->admin(); Db::pdo()->prepare('DELETE FROM categories WHERE id = ?')->execute([$p['id']]); $this->audit('delete_category','category#'.$p['id']); return ['ok' => true]; }
+
+    public function saveCrop(array $p, array $q, array $b): array {
+        $this->admin();
+        $id = $b['id'] ?? bin2hex(random_bytes(6));
+        Db::pdo()->prepare("INSERT INTO crops (id, name, season, product_count) VALUES (?, ?, ?, ?)
+                            ON DUPLICATE KEY UPDATE name=VALUES(name), season=VALUES(season)")
+            ->execute([$id, $b['name'] ?? '', $b['season'] ?? 'kharif', (int)($b['productCount'] ?? 0)]);
+        $this->audit('save_crop', 'crop#' . $id);
+        return ['id' => $id] + $b;
+    }
+    public function deleteCrop(array $p): array { $this->admin(); Db::pdo()->prepare('DELETE FROM crops WHERE id = ?')->execute([$p['id']]); $this->audit('delete_crop','crop#'.$p['id']); return ['ok' => true]; }
+
+    public function saveContent(array $p, array $q, array $b): array {
+        $this->admin();
+        $id = $b['id'] ?? bin2hex(random_bytes(6));
+        Db::pdo()->prepare("INSERT INTO content_items (id, kind, title, slug, body, media_url, published)
+                            VALUES (?, ?, ?, ?, ?, ?, ?)
+                            ON DUPLICATE KEY UPDATE kind=VALUES(kind), title=VALUES(title), slug=VALUES(slug),
+                              body=VALUES(body), media_url=VALUES(media_url), published=VALUES(published)")
+            ->execute([$id, $b['kind'] ?? 'blog', $b['title'] ?? '', $b['slug'] ?? null,
+                       $b['body'] ?? null, $b['mediaUrl'] ?? null, !empty($b['published']) ? 1 : 0]);
+        $this->audit('save_content', 'content#' . $id);
+        return ['id' => $id] + $b;
+    }
+    public function deleteContent(array $p): array { $this->admin(); Db::pdo()->prepare('DELETE FROM content_items WHERE id = ?')->execute([$p['id']]); $this->audit('delete_content','content#'.$p['id']); return ['ok' => true]; }
+
+    // --- Loyalty manual grant ---
+    public function grantCoins(array $p, array $q, array $b): array {
+        $this->admin();
+        $pdo = Db::pdo();
+        $pdo->prepare('UPDATE users SET coins = coins + ? WHERE id = ?')->execute([(int)$b['coins'], $b['customerId']]);
+        $pdo->prepare('INSERT INTO coins_ledger (user_id, type, coins, reason) VALUES (?, "grant", ?, ?)')
+            ->execute([$b['customerId'], (int)$b['coins'], $b['reason'] ?? 'admin grant']);
+        $this->audit('grant_coins', 'user#' . $b['customerId']);
+        return ['ok' => true];
+    }
 
     // --- Reviews ---
     public function reviews(array $p, array $q): array {

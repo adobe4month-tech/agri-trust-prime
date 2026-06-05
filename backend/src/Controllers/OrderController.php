@@ -58,7 +58,15 @@ class OrderController {
     }
 
     public function reorder(array $p): array {
-        // TODO: copy past order's items into the buyer's cart.
+        $user = Auth::requireUser();
+        $pdo = Db::pdo();
+        $stmt = $pdo->prepare('SELECT product_id, qty FROM order_items WHERE order_id = ?');
+        $stmt->execute([$p['id']]);
+        $ins = $pdo->prepare('INSERT INTO cart (user_id, product_id, qty) VALUES (?, ?, ?)
+                              ON DUPLICATE KEY UPDATE qty = qty + VALUES(qty)');
+        foreach ($stmt->fetchAll() as $row) {
+            $ins->execute([$user['id'], (int)$row['product_id'], (int)$row['qty']]);
+        }
         return ['ok' => true];
     }
 }
