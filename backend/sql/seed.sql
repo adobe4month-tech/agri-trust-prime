@@ -6,18 +6,11 @@
 -- If you change passwords, regenerate hashes with:
 --   php -r "echo password_hash('newpassword', PASSWORD_BCRYPT) . PHP_EOL;"
 
+-- Bcrypt hashes below are REAL (cost 10). PHP password_verify accepts $2b$ and $2y$.
 INSERT INTO users (id, name, email, phone, password_hash, role) VALUES
- ('u_demo_user',   'Demo Buyer',  'user@test.com',   '03001112233', '$2y$10$WnFcEMxv9Q9V6sQ5jLqDquPiJzkfTb1mUuiZTtR2x1qKlEXjPJ9Jq', 'customer'),
- ('u_demo_seller', 'Demo Seller', 'seller@test.com', '03002223344', '$2y$10$RcU0ye7Pa6OQ.S7AYBh1ueR0eOSO1KvCdc.7d2qbXn1.PgM5Vqz2K', 'seller'),
- ('u_demo_admin',  'Demo Admin',  'admin@test.com',  '03003334455', '$2y$10$0PoIc6KQwMnxRY1XK/L5O.GpOd8d5K6Ja7Nw9TQk3UqVxIeC8nq9C', 'admin');
-
--- IMPORTANT: the bcrypt hashes above are PLACEHOLDERS.
--- After importing schema + this file, run this from PHP CLI to set real ones:
---
---   php -r "require 'vendor/autoload.php'; \$pdo = new PDO('mysql:host=localhost;dbname=kissancares', 'root', '');
---           foreach ([['user@test.com','user123'],['seller@test.com','seller123'],['admin@test.com','admin123']] as [\$e, \$p]) {
---             \$pdo->prepare('UPDATE users SET password_hash = ? WHERE email = ?')->execute([password_hash(\$p, PASSWORD_BCRYPT), \$e]);
---           } echo \"Passwords set\n\";"
+ ('u_demo_user',   'Demo Buyer',  'user@test.com',   '03001112233', '$2b$10$y0olQKSCXxNPjKbFuPYt7Oy1hX9T6AXsAfPWvFrPsPAptPJVBd2rm', 'customer'),
+ ('u_demo_seller', 'Demo Seller', 'seller@test.com', '03002223344', '$2b$10$L34RcIeSdxseF87esdVfFOgf1qXz9UloyLOipRSWvTbuNu5PkKlXu', 'seller'),
+ ('u_demo_admin',  'Demo Admin',  'admin@test.com',  '03003334455', '$2b$10$u6yTW9ncp4/a.WqpXaRkbe3Vj.BXHwhzPVHygzN1wHTZUE69cH9RC', 'admin');
 
 INSERT INTO categories (id, name, slug, product_count) VALUES
  ('cat1','Fertilizers','fertilizers',24),
